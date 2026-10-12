@@ -1,0 +1,134 @@
+<resources>
+    <string name="app_name">ML Guide</string>
+
+    <!-- Common -->
+    <string name="action_cancel">Cancel</string>
+    <string name="action_ok">OK</string>
+    <string name="field_login">Login</string>
+    <string name="field_password">Password</string>
+    <string name="field_password_confirm">Repeat password</string>
+    <string name="field_nickname">Nickname</string>
+
+    <!-- Validation -->
+    <string name="error_login_empty">Enter your login</string>
+    <string name="error_login_short">Login must be at least 3 characters</string>
+    <string name="error_login_chars">Latin letters, digits and _ only</string>
+    <string name="error_password_empty">Enter your password</string>
+    <string name="error_password_short">Password must be at least 6 characters</string>
+    <string name="error_password_mismatch">Passwords do not match</string>
+    <string name="error_nickname_empty">Enter a nickname</string>
+    <string name="error_nickname_length">Nickname: 2 to 20 characters</string>
+    <string name="error_wrong_credentials">Wrong login or password</string>
+    <string name="error_full_name">Letters, spaces and hyphens only</string>
+    <string name="error_age">Age must be between 1 and 120</string>
+    <string name="error_wrong_password">Wrong current password</string>
+
+    <!-- Start screen -->
+    <string name="start_brand">ML GUIDE</string>
+    <string name="start_description">Mobile Legends hero guide:\nroles, lanes, difficulty and win rates</string>
+    <string name="start_welcome_new">Welcome!</string>
+    <string name="start_hint_new">Sign in or create an account</string>
+    <string name="start_welcome_back">Welcome back, %1$s!</string>
+    <string name="start_hint_back">Enter your password to continue</string>
+    <string name="start_login">Sign in</string>
+    <string name="start_no_account">No account yet?</string>
+    <string name="start_register">Sign up</string>
+    <string name="start_no_user">User not found. Please sign up first</string>
+    <string name="start_registered">Account %1$s created. Enter your password to sign in</string>
+    <string name="start_registration_cancelled">Registration cancelled</string>
+
+    <!-- Registration -->
+    <string name="registration_title">Sign up</string>
+    <string name="registration_description">Create your ML Guide account</string>
+    <string name="registration_login_helper">Latin letters, digits and _, 3+ characters</string>
+    <string name="registration_password_helper">At least 6 characters</string>
+    <string name="registration_submit">Sign up</string>
+    <string name="registration_replace_title">Replace account?</string>
+    <string name="registration_replace_message">Account “%1$s” already exists on this device. It will be replaced with the new one.</string>
+    <string name="registration_replace_confirm">Replace</string>
+
+    <!-- Hero roles -->
+    <string name="role_tank">Tank</string>
+    <string name="role_fighter">Fighter</string>
+    <string name="role_assassin">Assassin</string>
+    <string name="role_mage">Mage</string>
+    <string name="role_marksman">Marksman</string>
+    <string name="role_support">Support</string>
+
+    <!-- Lanes -->
+    <string name="lane_gold">Gold Lane</string>
+    <string name="lane_exp">EXP Lane</string>
+    <string name="lane_mid">Mid Lane</string>
+    <string name="lane_jungle">Jungle</string>
+    <string name="lane_roam">Roam</string>
+
+    <!-- Content screen -->
+    <string name="content_title">Heroes</string>
+    <string name="content_subtitle_count">Heroes loaded: %1$d</string>
+    <string name="content_subtitle_backup">From backup: %1$d</string>
+    <string name="content_empty_title">No data</string>
+    <string name="content_empty_with_backup">Could not load heroes: no internet connection.\nA backup from %1$s is available on this device.</string>
+    <string name="content_empty_no_backup">Could not load heroes: no internet connection and no backup.\nCheck your connection (or turn off offline mode in settings) and try again.</string>
+    <string name="content_use_backup">Use backup</string>
+    <string name="content_retry">Try again</string>
+    <string name="content_load_more">Load more heroes</string>
+    <string name="content_all_loaded">All heroes loaded</string>
+    <string name="content_no_connection">No internet connection</string>
+    <string name="content_backup_restored">Data restored from backup</string>
+    <string name="content_backup_broken">Backup is corrupted or empty</string>
+    <string name="hero_win_rate">win rate</string>
+    <string name="hero_difficulty">Difficulty %1$d/10</string>
+
+    <!-- Settings screen -->
+    <string name="settings_title">Settings</string>
+    <string name="settings_back">Back to heroes</string>
+
+    <string name="settings_backup_section">Backup</string>
+    <string name="settings_backup_none">There is no backup on this device. Create one to browse heroes offline.</string>
+    <string name="settings_backup_exists">Heroes saved: %1$d\nCreated: %2$s</string>
+    <string name="settings_backup_no_data">Load heroes on the content screen first - nothing to back up yet.</string>
+    <string name="settings_backup_create">Create backup</string>
+    <string name="settings_backup_update">Update backup</string>
+    <string name="settings_backup_restore">Restore data from backup</string>
+    <string name="settings_backup_delete">Delete backup</string>
+    <string name="settings_backup_created">Backup created</string>
+    <string name="settings_backup_restored">Data restored from backup</string>
+    <string name="settings_backup_deleted">Backup deleted</string>
+    <string name="settings_backup_error">Backup operation failed</string>
+    <string name="settings_backup_delete_title">Delete backup?</string>
+    <string name="settings_backup_delete_message">Without a backup, heroes won\'t be available offline.</string>
+    <string name="settings_delete">Delete</string>
+    <string name="settings_offline">Offline mode (simulate no internet)</string>
+
+    <string name="settings_profile_section">Profile</string>
+    <string name="settings_login">Login: %1$s</string>
+    <string name="settings_avatar">Avatar</string>
+    <string name="settings_avatar_pick">Choose avatar</string>
+    <string name="settings_avatar_saved">Avatar updated</string>
+    <string name="settings_full_name">Full name</string>
+    <string name="settings_age">Age</string>
+    <string name="settings_gender">Gender</string>
+    <string name="settings_gender_male">Male</string>
+    <string name="settings_gender_female">Female</string>
+    <string name="settings_save_profile">Save profile</string>
+    <string name="settings_profile_saved">Profile saved</string>
+    <string name="settings_change_password">Change password</string>
+    <string name="settings_old_password">Current password</string>
+    <string name="settings_new_password">New password</string>
+    <string name="settings_password_changed">Password changed</string>
+    <string name="settings_save">Save</string>
+    <string name="settings_logout">Sign out</string>
+
+    <string name="settings_appearance_section">Appearance</string>
+    <string name="settings_theme">Theme</string>
+    <string name="settings_theme_light">Light</string>
+    <string name="settings_theme_dark">Dark</string>
+    <string name="settings_system">System</string>
+    <string name="settings_palette">Color scheme</string>
+    <string name="settings_palette_purple">Purple</string>
+    <string name="settings_palette_blue">Blue</string>
+    <string name="settings_palette_gold">Gold</string>
+    <string name="settings_palette_green">Green</string>
+    <string name="settings_font_size">Font size: %1$d%%</string>
+    <string name="settings_language">Language</string>
+</resources>

@@ -14,4 +14,26 @@
     <!-- Процент побед -->
     <color name="win_rate_high">#FF2E9D57</color>
     <color name="win_rate_low">#FFD0453B</color>
+
+    <!-- Цветовые схемы (светлая тема) -->
+    <color name="palette_blue_primary">#FF1E5AA8</color>
+    <color name="palette_blue_on_primary">#FFFFFFFF</color>
+    <color name="palette_blue_primary_container">#FFD6E3FF</color>
+    <color name="palette_blue_on_primary_container">#FF001B3E</color>
+    <color name="palette_blue_secondary_container">#FFDAE2F9</color>
+    <color name="palette_blue_on_secondary_container">#FF131C2B</color>
+
+    <color name="palette_gold_primary">#FF7A5900</color>
+    <color name="palette_gold_on_primary">#FFFFFFFF</color>
+    <color name="palette_gold_primary_container">#FFFFDEA6</color>
+    <color name="palette_gold_on_primary_container">#FF261900</color>
+    <color name="palette_gold_secondary_container">#FFF5E0BB</color>
+    <color name="palette_gold_on_secondary_container">#FF241A04</color>
+
+    <color name="palette_green_primary">#FF2B6C3E</color>
+    <color name="palette_green_on_primary">#FFFFFFFF</color>
+    <color name="palette_green_primary_container">#FFAEF2BA</color>
+    <color name="palette_green_on_primary_container">#FF00210C</color>
+    <color name="palette_green_secondary_container">#FFD3E8D3</color>
+    <color name="palette_green_on_secondary_container">#FF0F1F12</color>
 </resources>

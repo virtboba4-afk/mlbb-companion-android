@@ -1,5 +1,7 @@
 package com.example.androidlab;
 
+import android.content.Context;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -7,23 +9,53 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.androidlab.data.AppPrefs;
+
 /**
  * Базовая деятельность: логирует каждый метод жизненного цикла
  * в формате "[название класса]: [название метода]".
  * Фильтр в LogCat: tag:Lifecycle
+ *
+ * Также применяет пользовательские настройки оформления: цветовую схему и размер шрифта.
  */
 public abstract class BaseActivity extends AppCompatActivity {
 
     public static final String LOG_TAG = "Lifecycle";
+
+    /** Оформление, с которым создан экран (цветовая схема + размер шрифта). */
+    private String appliedAppearance;
 
     protected void log(String method) {
         Log.d(LOG_TAG, getClass().getSimpleName() + ": " + method);
     }
 
     @Override
+    protected void attachBaseContext(Context newBase) {
+        // Размер шрифта: множитель к системному
+        Configuration config = new Configuration(newBase.getResources().getConfiguration());
+        config.fontScale *= new AppPrefs(newBase).getFontScale();
+        super.attachBaseContext(newBase.createConfigurationContext(config));
+    }
+
+    @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
+        AppPrefs prefs = new AppPrefs(this);
+        setTheme(prefs.getPaletteTheme());
+        appliedAppearance = appearanceOf(prefs);
+
         super.onCreate(savedInstanceState);
         log("onCreate");
+    }
+
+    private static String appearanceOf(AppPrefs prefs) {
+        return prefs.getPalette() + "|" + prefs.getFontScaleIndex();
+    }
+
+    /** Пересоздаёт экран, если оформление изменили, пока он был в фоне. */
+    protected void recreateIfAppearanceChanged() {
+        if (!appearanceOf(new AppPrefs(this)).equals(appliedAppearance)) {
+            recreate();
+        }
     }
 
     @Override
@@ -36,6 +68,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     protected void onRestart() {
         super.onRestart();
         log("onRestart");
+        recreateIfAppearanceChanged();
     }
 
     @Override

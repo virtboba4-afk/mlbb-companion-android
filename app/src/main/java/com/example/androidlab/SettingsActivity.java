@@ -9,7 +9,10 @@ import android.widget.TextView;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatDelegate;
+import androidx.core.os.LocaleListCompat;
 
 import com.example.androidlab.data.AppPrefs;
 import com.example.androidlab.data.AvatarStorage;
@@ -19,9 +22,11 @@ import com.example.androidlab.model.Hero;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.button.MaterialButtonToggleGroup;
+import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.imageview.ShapeableImageView;
 import com.google.android.material.materialswitch.MaterialSwitch;
+import com.google.android.material.slider.Slider;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
@@ -76,6 +81,7 @@ public class SettingsActivity extends BaseActivity {
 
         setupBackupSection();
         setupProfileSection(savedInstanceState == null);
+        setupAppearanceSection();
     }
 
     // ===================== Резервная копия =====================
@@ -291,6 +297,94 @@ public class SettingsActivity extends BaseActivity {
                 }));
 
         dialog.show();
+    }
+
+    // ===================== Оформление =====================
+
+    private void setupAppearanceSection() {
+        // Сначала выставляем текущие значения, потом вешаем слушатели,
+        // чтобы программная установка не считалась изменением
+
+        // Тема
+        MaterialButtonToggleGroup toggleTheme = findViewById(R.id.toggleTheme);
+        int mode = prefs.getThemeMode();
+        toggleTheme.check(mode == AppCompatDelegate.MODE_NIGHT_NO ? R.id.btnThemeLight
+                : mode == AppCompatDelegate.MODE_NIGHT_YES ? R.id.btnThemeDark
+                : R.id.btnThemeSystem);
+        toggleTheme.addOnButtonCheckedListener((group, checkedId, isChecked) -> {
+            if (!isChecked) return;
+            int newMode = checkedId == R.id.btnThemeLight ? AppCompatDelegate.MODE_NIGHT_NO
+                    : checkedId == R.id.btnThemeDark ? AppCompatDelegate.MODE_NIGHT_YES
+                    : AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM;
+            prefs.setThemeMode(newMode);
+            // AppCompat сам пересоздаст открытые экраны
+            AppCompatDelegate.setDefaultNightMode(newMode);
+        });
+
+        // Цветовая схема
+        ChipGroup chipGroupPalette = findViewById(R.id.chipGroupPalette);
+        switch (prefs.getPalette()) {
+            case AppPrefs.PALETTE_BLUE:
+                chipGroupPalette.check(R.id.chipPaletteBlue);
+                break;
+            case AppPrefs.PALETTE_GOLD:
+                chipGroupPalette.check(R.id.chipPaletteGold);
+                break;
+            case AppPrefs.PALETTE_GREEN:
+                chipGroupPalette.check(R.id.chipPaletteGreen);
+                break;
+            default:
+                chipGroupPalette.check(R.id.chipPalettePurple);
+        }
+        chipGroupPalette.setOnCheckedStateChangeListener((group, checkedIds) -> {
+            if (checkedIds.isEmpty()) return;
+            int id = checkedIds.get(0);
+            String palette = id == R.id.chipPaletteBlue ? AppPrefs.PALETTE_BLUE
+                    : id == R.id.chipPaletteGold ? AppPrefs.PALETTE_GOLD
+                    : id == R.id.chipPaletteGreen ? AppPrefs.PALETTE_GREEN
+                    : AppPrefs.PALETTE_PURPLE;
+            prefs.setPalette(palette);
+            recreateIfAppearanceChanged();
+        });
+
+        // Размер шрифта
+        TextView tvFontSize = findViewById(R.id.tvFontSize);
+        Slider sliderFontSize = findViewById(R.id.sliderFontSize);
+        sliderFontSize.setValue(prefs.getFontScaleIndex());
+        sliderFontSize.setLabelFormatter(value -> fontPercent((int) value) + "%");
+        tvFontSize.setText(getString(R.string.settings_font_size, fontPercent(prefs.getFontScaleIndex())));
+        sliderFontSize.addOnChangeListener((slider, value, fromUser) ->
+                tvFontSize.setText(getString(R.string.settings_font_size, fontPercent((int) value))));
+        sliderFontSize.addOnSliderTouchListener(new Slider.OnSliderTouchListener() {
+            @Override
+            public void onStartTrackingTouch(@NonNull Slider slider) {
+            }
+
+            @Override
+            public void onStopTrackingTouch(@NonNull Slider slider) {
+                prefs.setFontScaleIndex((int) slider.getValue());
+                recreateIfAppearanceChanged();
+            }
+        });
+
+        // Язык
+        MaterialButtonToggleGroup toggleLanguage = findViewById(R.id.toggleLanguage);
+        String language = AppCompatDelegate.getApplicationLocales().toLanguageTags();
+        toggleLanguage.check(language.startsWith("ru") ? R.id.btnLangRu
+                : language.startsWith("en") ? R.id.btnLangEn
+                : R.id.btnLangSystem);
+        toggleLanguage.addOnButtonCheckedListener((group, checkedId, isChecked) -> {
+            if (!isChecked) return;
+            String tags = checkedId == R.id.btnLangRu ? "ru"
+                    : checkedId == R.id.btnLangEn ? "en"
+                    : "";
+            // AppCompat сохранит выбор и пересоздаст открытые экраны
+            AppCompatDelegate.setApplicationLocales(LocaleListCompat.forLanguageTags(tags));
+        });
+    }
+
+    private static int fontPercent(int index) {
+        return Math.round(AppPrefs.FONT_SCALES[index] * 100);
     }
 
     // ===================== Прочее =====================
