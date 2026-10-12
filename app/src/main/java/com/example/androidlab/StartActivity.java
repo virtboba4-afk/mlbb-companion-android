@@ -132,6 +132,8 @@ public class StartActivity extends BaseActivity {
 
         prefs.saveUser(login, password, nickname);
 
+        loginLayout.setError(null);
+        passwordLayout.setError(null);
         etPassword.setText("");
         showUserState(true);
 
