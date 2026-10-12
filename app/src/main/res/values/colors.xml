@@ -2,4 +2,12 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <!-- Цвета ролей героев (рамка карточки, аватар, метка роли) -->
+    <color name="role_tank">#FF3F7CC4</color>
+    <color name="role_fighter">#FFC4573F</color>
+    <color name="role_assassin">#FF7A4FC4</color>
+    <color name="role_mage">#FFC43F9A</color>
+    <color name="role_marksman">#FFD9962B</color>
+    <color name="role_support">#FF2FA37A</color>
 </resources>
