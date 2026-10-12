@@ -15,4 +15,24 @@
     <string name="lane_mid">Центр</string>
     <string name="lane_jungle">Лес</string>
     <string name="lane_roam">Роуминг</string>
+
+    <!-- Экран данных -->
+    <string name="content_title">Герои</string>
+    <string name="content_subtitle_count">Загружено героев: %1$d</string>
+    <string name="content_subtitle_backup">Из резервной копии: %1$d</string>
+    <string name="content_empty_title">Нет данных</string>
+    <string name="content_empty_with_backup">Не удалось загрузить героев: нет подключения к интернету.\nНа устройстве есть резервная копия от %1$s.</string>
+    <string name="content_empty_no_backup">Не удалось загрузить героев: нет подключения к интернету, резервной копии тоже нет.\nПроверьте соединение (или выключите офлайн-режим в настройках) и повторите.</string>
+    <string name="content_use_backup">Использовать резервную копию</string>
+    <string name="content_retry">Повторить загрузку</string>
+    <string name="content_load_more">Загрузить ещё героев</string>
+    <string name="content_all_loaded">Все герои загружены</string>
+    <string name="content_no_connection">Нет подключения к интернету</string>
+    <string name="content_backup_restored">Данные развёрнуты из резервной копии</string>
+    <string name="content_backup_broken">Резервная копия повреждена или пуста</string>
+    <string name="hero_win_rate">побед</string>
+    <string name="hero_difficulty">Сложность %1$d/10</string>
+
+    <!-- Экран настроек -->
+    <string name="settings_title">Настройки</string>
 </resources>

@@ -10,4 +10,8 @@
     <color name="role_mage">#FFC43F9A</color>
     <color name="role_marksman">#FFD9962B</color>
     <color name="role_support">#FF2FA37A</color>
+
+    <!-- Процент побед -->
+    <color name="win_rate_high">#FF2E9D57</color>
+    <color name="win_rate_low">#FFD0453B</color>
 </resources>
