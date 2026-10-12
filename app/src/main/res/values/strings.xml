@@ -1,6 +1,49 @@
 <resources>
     <string name="app_name">ML Guide</string>
 
+    <!-- Общие -->
+    <string name="action_cancel">Отмена</string>
+    <string name="action_ok">ОК</string>
+    <string name="field_login">Логин</string>
+    <string name="field_password">Пароль</string>
+    <string name="field_password_confirm">Повторите пароль</string>
+    <string name="field_nickname">Никнейм</string>
+
+    <!-- Валидация -->
+    <string name="error_login_empty">Введите логин</string>
+    <string name="error_login_short">Логин должен содержать минимум 3 символа</string>
+    <string name="error_login_chars">Только латинские буквы, цифры и _</string>
+    <string name="error_password_empty">Введите пароль</string>
+    <string name="error_password_short">Пароль должен содержать минимум 6 символов</string>
+    <string name="error_password_mismatch">Пароли не совпадают</string>
+    <string name="error_nickname_empty">Введите никнейм</string>
+    <string name="error_nickname_length">Никнейм: от 2 до 20 символов</string>
+    <string name="error_wrong_credentials">Неверный логин или пароль</string>
+
+    <!-- Стартовый экран -->
+    <string name="start_brand">ML GUIDE</string>
+    <string name="start_description">Справочник героев Mobile Legends:\nроли, линии, сложность и статистика побед</string>
+    <string name="start_welcome_new">Добро пожаловать!</string>
+    <string name="start_hint_new">Войдите или создайте аккаунт</string>
+    <string name="start_welcome_back">С возвращением, %1$s!</string>
+    <string name="start_hint_back">Введите пароль, чтобы продолжить</string>
+    <string name="start_login">Войти</string>
+    <string name="start_no_account">Нет аккаунта?</string>
+    <string name="start_register">Зарегистрироваться</string>
+    <string name="start_no_user">Пользователь не найден. Сначала зарегистрируйтесь</string>
+    <string name="start_registered">Аккаунт %1$s создан. Введите пароль для входа</string>
+    <string name="start_registration_cancelled">Регистрация отменена</string>
+
+    <!-- Регистрация -->
+    <string name="registration_title">Регистрация</string>
+    <string name="registration_description">Создайте аккаунт ML Guide</string>
+    <string name="registration_login_helper">Латиница, цифры и _, от 3 символов</string>
+    <string name="registration_password_helper">Не менее 6 символов</string>
+    <string name="registration_submit">Зарегистрироваться</string>
+    <string name="registration_replace_title">Заменить аккаунт?</string>
+    <string name="registration_replace_message">На устройстве уже есть аккаунт «%1$s». После регистрации он будет заменён новым.</string>
+    <string name="registration_replace_confirm">Заменить</string>
+
     <!-- Роли героев -->
     <string name="role_tank">Танк</string>
     <string name="role_fighter">Боец</string>
