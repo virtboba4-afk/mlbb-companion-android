@@ -3,19 +3,29 @@ package com.example.androidlab;
 import android.content.Intent;
 import android.os.Bundle;
 
-
+import com.example.androidlab.data.AppPrefs;
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
 
 public class RegistrationActivity extends BaseActivity {
+
+    public static final String EXTRA_LOGIN = "login";
+    public static final String EXTRA_PASSWORD = "password";
+    public static final String EXTRA_NICKNAME = "nickname";
+
+    private static final String LOGIN_PATTERN = "[A-Za-z0-9_]+";
+
+    private TextInputLayout loginLayout;
+    private TextInputLayout passwordLayout;
+    private TextInputLayout passwordConfirmLayout;
+    private TextInputLayout nicknameLayout;
 
     private TextInputEditText etLogin;
     private TextInputEditText etPassword;
     private TextInputEditText etPasswordConfirm;
     private TextInputEditText etNickname;
-
-    private MaterialButton btnCompleteRegistration;
-    private MaterialButton btnCancelRegistration;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,17 +33,25 @@ public class RegistrationActivity extends BaseActivity {
 
         setContentView(R.layout.activity_registration);
 
+        loginLayout = findViewById(R.id.registrationLoginLayout);
+        passwordLayout = findViewById(R.id.registrationPasswordLayout);
+        passwordConfirmLayout = findViewById(R.id.registrationPasswordConfirmLayout);
+        nicknameLayout = findViewById(R.id.registrationNicknameLayout);
+
         etLogin = findViewById(R.id.etRegistrationLogin);
         etPassword = findViewById(R.id.etRegistrationPassword);
         etPasswordConfirm = findViewById(R.id.etRegistrationPasswordConfirm);
         etNickname = findViewById(R.id.etRegistrationNickname);
 
-        btnCompleteRegistration = findViewById(R.id.btnCompleteRegistration);
-        btnCancelRegistration = findViewById(R.id.btnCancelRegistration);
+        MaterialButton btnCompleteRegistration = findViewById(R.id.btnCompleteRegistration);
+        MaterialButton btnCancelRegistration = findViewById(R.id.btnCancelRegistration);
 
         btnCompleteRegistration.setOnClickListener(v -> registerUser());
 
-        btnCancelRegistration.setOnClickListener(v -> finish());
+        btnCancelRegistration.setOnClickListener(v -> {
+            setResult(RESULT_CANCELED);
+            finish();
+        });
     }
 
     private void registerUser() {
@@ -43,46 +61,73 @@ public class RegistrationActivity extends BaseActivity {
         String passwordConfirm = etPasswordConfirm.getText().toString().trim();
         String nickname = etNickname.getText().toString().trim();
 
+        loginLayout.setError(null);
+        passwordLayout.setError(null);
+        passwordConfirmLayout.setError(null);
+        nicknameLayout.setError(null);
+
         if (login.isEmpty()) {
-            etLogin.setError("Введите логин");
+            loginLayout.setError(getString(R.string.error_login_empty));
             return;
         }
 
         if (login.length() < 3) {
-            etLogin.setError("Логин должен содержать минимум 3 символа");
+            loginLayout.setError(getString(R.string.error_login_short));
+            return;
+        }
+
+        if (!login.matches(LOGIN_PATTERN)) {
+            loginLayout.setError(getString(R.string.error_login_chars));
             return;
         }
 
         if (password.isEmpty()) {
-            etPassword.setError("Введите пароль");
+            passwordLayout.setError(getString(R.string.error_password_empty));
             return;
         }
 
         if (password.length() < 6) {
-            etPassword.setError("Пароль должен содержать минимум 6 символов");
-            return;
-        }
-
-        if (passwordConfirm.isEmpty()) {
-            etPasswordConfirm.setError("Повторите пароль");
+            passwordLayout.setError(getString(R.string.error_password_short));
             return;
         }
 
         if (!password.equals(passwordConfirm)) {
-            etPasswordConfirm.setError("Пароли не совпадают");
+            passwordConfirmLayout.setError(getString(R.string.error_password_mismatch));
             return;
         }
 
         if (nickname.isEmpty()) {
-            etNickname.setError("Введите никнейм");
+            nicknameLayout.setError(getString(R.string.error_nickname_empty));
             return;
         }
 
+        if (nickname.length() < 2 || nickname.length() > 20) {
+            nicknameLayout.setError(getString(R.string.error_nickname_length));
+            return;
+        }
+
+        AppPrefs prefs = new AppPrefs(this);
+        if (prefs.hasUser() && !prefs.getLogin().equals(login)) {
+            // На устройстве хранится один аккаунт - предупреждаем о замене
+            new MaterialAlertDialogBuilder(this)
+                    .setTitle(R.string.registration_replace_title)
+                    .setMessage(getString(R.string.registration_replace_message, prefs.getLogin()))
+                    .setPositiveButton(R.string.registration_replace_confirm,
+                            (dialog, which) -> finishWithResult(login, password, nickname))
+                    .setNegativeButton(R.string.action_cancel, null)
+                    .show();
+            return;
+        }
+
+        finishWithResult(login, password, nickname);
+    }
+
+    private void finishWithResult(String login, String password, String nickname) {
         Intent resultIntent = new Intent();
 
-        resultIntent.putExtra("login", login);
-        resultIntent.putExtra("password", password);
-        resultIntent.putExtra("nickname", nickname);
+        resultIntent.putExtra(EXTRA_LOGIN, login);
+        resultIntent.putExtra(EXTRA_PASSWORD, password);
+        resultIntent.putExtra(EXTRA_NICKNAME, nickname);
 
         setResult(RESULT_OK, resultIntent);
         finish();
