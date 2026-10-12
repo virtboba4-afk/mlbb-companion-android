@@ -78,4 +78,45 @@
 
     <!-- Экран настроек -->
     <string name="settings_title">Настройки</string>
+    <string name="settings_back">К списку героев</string>
+
+    <string name="settings_backup_section">Резервная копия</string>
+    <string name="settings_backup_none">Резервной копии на устройстве нет. Создайте её, чтобы просматривать героев без интернета.</string>
+    <string name="settings_backup_exists">Сохранено героев: %1$d\nСоздана: %2$s</string>
+    <string name="settings_backup_no_data">Сначала загрузите героев на экране данных - копировать пока нечего.</string>
+    <string name="settings_backup_create">Создать резервную копию</string>
+    <string name="settings_backup_update">Обновить резервную копию</string>
+    <string name="settings_backup_restore">Развернуть данные из копии</string>
+    <string name="settings_backup_delete">Удалить резервную копию</string>
+    <string name="settings_backup_created">Резервная копия создана</string>
+    <string name="settings_backup_restored">Данные развёрнуты из резервной копии</string>
+    <string name="settings_backup_deleted">Резервная копия удалена</string>
+    <string name="settings_backup_error">Не удалось выполнить операцию с резервной копией</string>
+    <string name="settings_backup_delete_title">Удалить резервную копию?</string>
+    <string name="settings_backup_delete_message">Без копии герои будут недоступны без интернета.</string>
+    <string name="settings_delete">Удалить</string>
+    <string name="settings_offline">Офлайн-режим (имитация отсутствия интернета)</string>
+
+    <string name="settings_profile_section">Профиль</string>
+    <string name="settings_login">Логин: %1$s</string>
+    <string name="settings_avatar">Аватар</string>
+    <string name="settings_avatar_pick">Выбрать аватар</string>
+    <string name="settings_avatar_saved">Аватар обновлён</string>
+    <string name="settings_full_name">Фамилия Имя Отчество</string>
+    <string name="settings_age">Возраст</string>
+    <string name="settings_gender">Пол</string>
+    <string name="settings_gender_male">Мужской</string>
+    <string name="settings_gender_female">Женский</string>
+    <string name="settings_save_profile">Сохранить профиль</string>
+    <string name="settings_profile_saved">Профиль сохранён</string>
+    <string name="settings_change_password">Изменить пароль</string>
+    <string name="settings_old_password">Текущий пароль</string>
+    <string name="settings_new_password">Новый пароль</string>
+    <string name="settings_password_changed">Пароль изменён</string>
+    <string name="settings_save">Сохранить</string>
+    <string name="settings_logout">Выйти из аккаунта</string>
+
+    <string name="error_full_name">Только буквы, пробелы и дефис</string>
+    <string name="error_age">Возраст должен быть от 1 до 120</string>
+    <string name="error_wrong_password">Неверный текущий пароль</string>
 </resources>
