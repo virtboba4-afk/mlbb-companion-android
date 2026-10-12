@@ -5,7 +5,38 @@
         <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
     </style>
 
+    <!-- Фиолетовая (стандартная) цветовая схема Material 3 -->
     <style name="Theme.AndroidLab" parent="Base.Theme.AndroidLab" />
+
+    <!-- Синяя цветовая схема -->
+    <style name="Theme.AndroidLab.Blue" parent="Theme.AndroidLab">
+        <item name="colorPrimary">@color/palette_blue_primary</item>
+        <item name="colorOnPrimary">@color/palette_blue_on_primary</item>
+        <item name="colorPrimaryContainer">@color/palette_blue_primary_container</item>
+        <item name="colorOnPrimaryContainer">@color/palette_blue_on_primary_container</item>
+        <item name="colorSecondaryContainer">@color/palette_blue_secondary_container</item>
+        <item name="colorOnSecondaryContainer">@color/palette_blue_on_secondary_container</item>
+    </style>
+
+    <!-- Золотая цветовая схема -->
+    <style name="Theme.AndroidLab.Gold" parent="Theme.AndroidLab">
+        <item name="colorPrimary">@color/palette_gold_primary</item>
+        <item name="colorOnPrimary">@color/palette_gold_on_primary</item>
+        <item name="colorPrimaryContainer">@color/palette_gold_primary_container</item>
+        <item name="colorOnPrimaryContainer">@color/palette_gold_on_primary_container</item>
+        <item name="colorSecondaryContainer">@color/palette_gold_secondary_container</item>
+        <item name="colorOnSecondaryContainer">@color/palette_gold_on_secondary_container</item>
+    </style>
+
+    <!-- Зелёная цветовая схема -->
+    <style name="Theme.AndroidLab.Green" parent="Theme.AndroidLab">
+        <item name="colorPrimary">@color/palette_green_primary</item>
+        <item name="colorOnPrimary">@color/palette_green_on_primary</item>
+        <item name="colorPrimaryContainer">@color/palette_green_primary_container</item>
+        <item name="colorOnPrimaryContainer">@color/palette_green_on_primary_container</item>
+        <item name="colorSecondaryContainer">@color/palette_green_secondary_container</item>
+        <item name="colorOnSecondaryContainer">@color/palette_green_on_secondary_container</item>
+    </style>
 
     <!-- Круглая форма для аватара -->
     <style name="ShapeAppearance.AndroidLab.Circle" parent="">

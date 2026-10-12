@@ -116,6 +116,19 @@
     <string name="settings_save">Сохранить</string>
     <string name="settings_logout">Выйти из аккаунта</string>
 
+    <string name="settings_appearance_section">Оформление</string>
+    <string name="settings_theme">Тема</string>
+    <string name="settings_theme_light">Светлая</string>
+    <string name="settings_theme_dark">Тёмная</string>
+    <string name="settings_system">Системная</string>
+    <string name="settings_palette">Цветовая схема</string>
+    <string name="settings_palette_purple">Фиолетовая</string>
+    <string name="settings_palette_blue">Синяя</string>
+    <string name="settings_palette_gold">Золотая</string>
+    <string name="settings_palette_green">Зелёная</string>
+    <string name="settings_font_size">Размер шрифта: %1$d%%</string>
+    <string name="settings_language">Язык</string>
+
     <string name="error_full_name">Только буквы, пробелы и дефис</string>
     <string name="error_age">Возраст должен быть от 1 до 120</string>
     <string name="error_wrong_password">Неверный текущий пароль</string>

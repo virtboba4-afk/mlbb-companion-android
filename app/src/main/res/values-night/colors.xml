@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Цветовые схемы (тёмная тема) -->
+    <color name="palette_blue_primary">#FFA9C7FF</color>
+    <color name="palette_blue_on_primary">#FF003063</color>
+    <color name="palette_blue_primary_container">#FF00468C</color>
+    <color name="palette_blue_on_primary_container">#FFD6E3FF</color>
+    <color name="palette_blue_secondary_container">#FF3E4759</color>
+    <color name="palette_blue_on_secondary_container">#FFDAE2F9</color>
+
+    <color name="palette_gold_primary">#FFF6BE48</color>
+    <color name="palette_gold_on_primary">#FF402D00</color>
+    <color name="palette_gold_primary_container">#FF5C4300</color>
+    <color name="palette_gold_on_primary_container">#FFFFDEA6</color>
+    <color name="palette_gold_secondary_container">#FF554429</color>
+    <color name="palette_gold_on_secondary_container">#FFF5E0BB</color>
+
+    <color name="palette_green_primary">#FF92D5A0</color>
+    <color name="palette_green_on_primary">#FF003918</color>
+    <color name="palette_green_primary_container">#FF0E5228</color>
+    <color name="palette_green_on_primary_container">#FFAEF2BA</color>
+    <color name="palette_green_secondary_container">#FF3A4B3B</color>
+    <color name="palette_green_on_secondary_container">#FFD3E8D3</color>
+</resources>
