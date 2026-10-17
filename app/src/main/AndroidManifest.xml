@@ -14,20 +14,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AndroidLab">
 
+        <!-- Единственная деятельность: хост для всех экранов-фрагментов -->
         <activity
-            android:name=".RegistrationActivity"
-            android:exported="false" />
-
-        <activity
-            android:name=".ContentActivity"
-            android:exported="false" />
-
-        <activity
-            android:name=".SettingsActivity"
-            android:exported="false" />
-
-        <activity
-            android:name=".StartActivity"
+            android:name=".MainActivity"
             android:exported="true">
 
             <intent-filter>

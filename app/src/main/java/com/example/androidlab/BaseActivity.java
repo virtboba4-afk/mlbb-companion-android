@@ -51,8 +51,8 @@ public abstract class BaseActivity extends AppCompatActivity {
         return prefs.getPalette() + "|" + prefs.getFontScaleIndex();
     }
 
-    /** Пересоздаёт экран, если оформление изменили, пока он был в фоне. */
-    protected void recreateIfAppearanceChanged() {
+    /** Пересоздаёт экран, если оформление изменилось с момента его создания. */
+    public void recreateIfAppearanceChanged() {
         if (!appearanceOf(new AppPrefs(this)).equals(appliedAppearance)) {
             recreate();
         }

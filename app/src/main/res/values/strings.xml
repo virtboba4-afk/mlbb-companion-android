@@ -60,6 +60,7 @@
     <string name="lane_roam">Роуминг</string>
 
     <!-- Экран данных -->
+    <string name="content_greeting">Привет, %1$s! Удачной игры</string>
     <string name="content_title">Герои</string>
     <string name="content_subtitle_count">Загружено героев: %1$d</string>
     <string name="content_subtitle_backup">Из резервной копии: %1$d</string>
