@@ -5,16 +5,14 @@ import android.content.res.ColorStateList;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.androidlab.databinding.ItemHeroBinding;
+import com.example.androidlab.databinding.ItemLoadMoreBinding;
 import com.example.androidlab.model.Hero;
-import com.google.android.material.button.MaterialButton;
-import com.google.android.material.card.MaterialCardView;
-import com.google.android.material.progressindicator.LinearProgressIndicator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -57,9 +55,9 @@ public class HeroAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         if (viewType == TYPE_HERO) {
-            return new HeroHolder(inflater.inflate(R.layout.item_hero, parent, false));
+            return new HeroHolder(ItemHeroBinding.inflate(inflater, parent, false));
         }
-        return new FooterHolder(inflater.inflate(R.layout.item_load_more, parent, false));
+        return new FooterHolder(ItemLoadMoreBinding.inflate(inflater, parent, false));
     }
 
     @Override
@@ -73,25 +71,11 @@ public class HeroAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     static class HeroHolder extends RecyclerView.ViewHolder {
 
-        private final MaterialCardView card;
-        private final TextView tvAvatar;
-        private final TextView tvName;
-        private final TextView tvRole;
-        private final TextView tvLane;
-        private final TextView tvDifficulty;
-        private final LinearProgressIndicator pbDifficulty;
-        private final TextView tvWinRate;
+        private final ItemHeroBinding binding;
 
-        HeroHolder(@NonNull View itemView) {
-            super(itemView);
-            card = itemView.findViewById(R.id.cardHero);
-            tvAvatar = itemView.findViewById(R.id.tvAvatar);
-            tvName = itemView.findViewById(R.id.tvName);
-            tvRole = itemView.findViewById(R.id.tvRole);
-            tvLane = itemView.findViewById(R.id.tvLane);
-            tvDifficulty = itemView.findViewById(R.id.tvDifficulty);
-            pbDifficulty = itemView.findViewById(R.id.pbDifficulty);
-            tvWinRate = itemView.findViewById(R.id.tvWinRate);
+        HeroHolder(@NonNull ItemHeroBinding binding) {
+            super(binding.getRoot());
+            this.binding = binding;
         }
 
         void bind(Hero hero) {
@@ -100,39 +84,37 @@ public class HeroAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             ColorStateList roleTint = ColorStateList.valueOf(roleColor);
 
             // Оформление карточки зависит от роли героя
-            card.setStrokeColor(roleTint);
-            tvAvatar.setBackgroundTintList(roleTint);
-            tvRole.setBackgroundTintList(roleTint);
-            pbDifficulty.setIndicatorColor(roleColor);
+            binding.cardHero.setStrokeColor(roleTint);
+            binding.tvAvatar.setBackgroundTintList(roleTint);
+            binding.tvRole.setBackgroundTintList(roleTint);
+            binding.pbDifficulty.setIndicatorColor(roleColor);
 
-            tvAvatar.setText(hero.getName().substring(0, 1));
-            tvName.setText(hero.getName());
-            tvRole.setText(hero.getRole().title);
-            tvLane.setText(hero.getLane().title);
-            tvDifficulty.setText(context.getString(R.string.hero_difficulty, hero.getDifficulty()));
-            pbDifficulty.setProgress(hero.getDifficulty());
+            binding.tvAvatar.setText(hero.getName().substring(0, 1));
+            binding.tvName.setText(hero.getName());
+            binding.tvRole.setText(hero.getRole().title);
+            binding.tvLane.setText(hero.getLane().title);
+            binding.tvDifficulty.setText(context.getString(R.string.hero_difficulty, hero.getDifficulty()));
+            binding.pbDifficulty.setProgress(hero.getDifficulty());
 
-            tvWinRate.setText(String.format(Locale.getDefault(), "%.1f%%", hero.getWinRate()));
-            tvWinRate.setTextColor(ContextCompat.getColor(context,
+            binding.tvWinRate.setText(String.format(Locale.getDefault(), "%.1f%%", hero.getWinRate()));
+            binding.tvWinRate.setTextColor(ContextCompat.getColor(context,
                     hero.getWinRate() >= 50 ? R.color.win_rate_high : R.color.win_rate_low));
         }
     }
 
     static class FooterHolder extends RecyclerView.ViewHolder {
 
-        private final MaterialButton btnLoadMore;
-        private final TextView tvAllLoaded;
+        private final ItemLoadMoreBinding binding;
 
-        FooterHolder(@NonNull View itemView) {
-            super(itemView);
-            btnLoadMore = itemView.findViewById(R.id.btnLoadMore);
-            tvAllLoaded = itemView.findViewById(R.id.tvAllLoaded);
+        FooterHolder(@NonNull ItemLoadMoreBinding binding) {
+            super(binding.getRoot());
+            this.binding = binding;
         }
 
         void bind(boolean hasMore, Runnable onLoadMore) {
-            btnLoadMore.setVisibility(hasMore ? View.VISIBLE : View.GONE);
-            tvAllLoaded.setVisibility(hasMore ? View.GONE : View.VISIBLE);
-            btnLoadMore.setOnClickListener(v -> onLoadMore.run());
+            binding.btnLoadMore.setVisibility(hasMore ? View.VISIBLE : View.GONE);
+            binding.tvAllLoaded.setVisibility(hasMore ? View.GONE : View.VISIBLE);
+            binding.btnLoadMore.setOnClickListener(v -> onLoadMore.run());
         }
     }
 }
