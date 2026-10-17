@@ -22,6 +22,11 @@ public abstract class BaseFragment extends Fragment {
         Log.d(BaseActivity.LOG_TAG, getClass().getSimpleName() + ": " + method);
     }
 
+    /** Деятельность-хост, через которую выполняются переходы между экранами. */
+    protected MainActivity host() {
+        return (MainActivity) requireActivity();
+    }
+
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);

@@ -63,6 +63,7 @@
     <string name="lane_roam">Roam</string>
 
     <!-- Content screen -->
+    <string name="content_greeting">Hi, %1$s! Good luck in your games</string>
     <string name="content_title">Heroes</string>
     <string name="content_subtitle_count">Heroes loaded: %1$d</string>
     <string name="content_subtitle_backup">From backup: %1$d</string>
