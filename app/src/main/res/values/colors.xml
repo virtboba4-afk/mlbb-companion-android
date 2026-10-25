@@ -3,13 +3,12 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
 
-    <!-- Цвета ролей героев (рамка карточки, аватар, метка роли) -->
-    <color name="role_tank">#FF3F7CC4</color>
-    <color name="role_fighter">#FFC4573F</color>
-    <color name="role_assassin">#FF7A4FC4</color>
-    <color name="role_mage">#FFC43F9A</color>
-    <color name="role_marksman">#FFD9962B</color>
-    <color name="role_support">#FF2FA37A</color>
+    <!-- Цвета тиров героев (рамка карточки, аватар, метка тира) -->
+    <color name="tier_s">#FFD9962B</color>
+    <color name="tier_a">#FF7A4FC4</color>
+    <color name="tier_b">#FF3F7CC4</color>
+    <color name="tier_c">#FF2FA37A</color>
+    <color name="tier_d">#FF8A8F98</color>
 
     <!-- Процент побед -->
     <color name="win_rate_high">#FF2E9D57</color>

@@ -29,14 +29,20 @@ public class HeroAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private final Runnable onLoadMore;
     private List<Hero> heroes = new ArrayList<>();
     private boolean hasMore;
+    private boolean loadingMore;
 
     public HeroAdapter(Runnable onLoadMore) {
         this.onLoadMore = onLoadMore;
     }
 
-    public void submit(List<Hero> heroes, boolean hasMore) {
+    /**
+     * @param hasMore     есть ли на сервере следующая порция
+     * @param loadingMore идёт ли сейчас её загрузка
+     */
+    public void submit(List<Hero> heroes, boolean hasMore, boolean loadingMore) {
         this.heroes = new ArrayList<>(heroes);
         this.hasMore = hasMore;
+        this.loadingMore = loadingMore;
         notifyDataSetChanged();
     }
 
@@ -65,7 +71,7 @@ public class HeroAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         if (holder instanceof HeroHolder) {
             ((HeroHolder) holder).bind(heroes.get(position));
         } else {
-            ((FooterHolder) holder).bind(hasMore, onLoadMore);
+            ((FooterHolder) holder).bind(hasMore, loadingMore, onLoadMore);
         }
     }
 
@@ -80,21 +86,26 @@ public class HeroAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
         void bind(Hero hero) {
             Context context = itemView.getContext();
-            int roleColor = ContextCompat.getColor(context, hero.getRole().color);
-            ColorStateList roleTint = ColorStateList.valueOf(roleColor);
+            int tierColor = ContextCompat.getColor(context, hero.getTier().color);
+            ColorStateList tierTint = ColorStateList.valueOf(tierColor);
 
-            // Оформление карточки зависит от роли героя
-            binding.cardHero.setStrokeColor(roleTint);
-            binding.tvAvatar.setBackgroundTintList(roleTint);
-            binding.tvRole.setBackgroundTintList(roleTint);
-            binding.pbDifficulty.setIndicatorColor(roleColor);
+            // Оформление карточки зависит от тира героя
+            binding.cardHero.setStrokeColor(tierTint);
+            binding.tvAvatar.setBackgroundTintList(tierTint);
+            binding.tvTier.setBackgroundTintList(tierTint);
 
             binding.tvAvatar.setText(hero.getName().substring(0, 1));
             binding.tvName.setText(hero.getName());
-            binding.tvRole.setText(hero.getRole().title);
-            binding.tvLane.setText(hero.getLane().title);
-            binding.tvDifficulty.setText(context.getString(R.string.hero_difficulty, hero.getDifficulty()));
-            binding.pbDifficulty.setProgress(hero.getDifficulty());
+            binding.tvTier.setText(context.getString(R.string.hero_tier, hero.getTier().name()));
+            binding.tvPickBan.setText(context.getString(R.string.hero_pick_ban,
+                    hero.getPickRate(), hero.getBanRate()));
+
+            boolean growing = hero.getWinRateDelta() >= 0;
+            binding.tvTrend.setText(context.getString(
+                    growing ? R.string.hero_trend_up : R.string.hero_trend_down,
+                    hero.getWinRateDelta()));
+            binding.tvTrend.setTextColor(ContextCompat.getColor(context,
+                    growing ? R.color.win_rate_high : R.color.win_rate_low));
 
             binding.tvWinRate.setText(String.format(Locale.getDefault(), "%.1f%%", hero.getWinRate()));
             binding.tvWinRate.setTextColor(ContextCompat.getColor(context,
@@ -111,8 +122,9 @@ public class HeroAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             this.binding = binding;
         }
 
-        void bind(boolean hasMore, Runnable onLoadMore) {
-            binding.btnLoadMore.setVisibility(hasMore ? View.VISIBLE : View.GONE);
+        void bind(boolean hasMore, boolean loadingMore, Runnable onLoadMore) {
+            binding.pbLoadMore.setVisibility(loadingMore ? View.VISIBLE : View.GONE);
+            binding.btnLoadMore.setVisibility(hasMore && !loadingMore ? View.VISIBLE : View.GONE);
             binding.tvAllLoaded.setVisibility(hasMore ? View.GONE : View.VISIBLE);
             binding.btnLoadMore.setOnClickListener(v -> onLoadMore.run());
         }

@@ -44,29 +44,20 @@
     <string name="registration_replace_message">На устройстве уже есть аккаунт «%1$s». После регистрации он будет заменён новым.</string>
     <string name="registration_replace_confirm">Заменить</string>
 
-    <!-- Роли героев -->
-    <string name="role_tank">Танк</string>
-    <string name="role_fighter">Боец</string>
-    <string name="role_assassin">Убийца</string>
-    <string name="role_mage">Маг</string>
-    <string name="role_marksman">Стрелок</string>
-    <string name="role_support">Поддержка</string>
-
-    <!-- Линии -->
-    <string name="lane_gold">Золотая линия</string>
-    <string name="lane_exp">Линия опыта</string>
-    <string name="lane_mid">Центр</string>
-    <string name="lane_jungle">Лес</string>
-    <string name="lane_roam">Роуминг</string>
 
     <!-- Экран данных -->
     <string name="content_greeting">Привет, %1$s! Удачной игры</string>
     <string name="content_title">Герои</string>
-    <string name="content_subtitle_count">Загружено героев: %1$d</string>
+    <string name="content_subtitle_count">Загружено героев: %1$d из %2$d</string>
     <string name="content_subtitle_backup">Из резервной копии: %1$d</string>
     <string name="content_empty_title">Нет данных</string>
-    <string name="content_empty_with_backup">Не удалось загрузить героев: нет подключения к интернету.\nНа устройстве есть резервная копия от %1$s.</string>
-    <string name="content_empty_no_backup">Не удалось загрузить героев: нет подключения к интернету, резервной копии тоже нет.\nПроверьте соединение (или выключите офлайн-режим в настройках) и повторите.</string>
+    <string name="content_loading">Загружаем статистику героев…</string>
+    <string name="content_empty_with_backup">%1$s.\nНа устройстве есть резервная копия от %2$s.</string>
+    <string name="content_empty_no_backup">%1$s.\nРезервной копии нет. Проверьте соединение (или выключите офлайн-режим в настройках) и повторите.</string>
+    <string name="content_error_network">Сервер не отвечает. Попробуйте позже</string>
+    <string name="content_error_http">Сервер вернул ошибку %1$d</string>
+    <string name="content_error_bad_response">Сервер прислал некорректные данные</string>
+    <string name="content_error_empty">Сервер вернул пустой список героев</string>
     <string name="content_use_backup">Использовать резервную копию</string>
     <string name="content_retry">Повторить загрузку</string>
     <string name="content_load_more">Загрузить ещё героев</string>
@@ -75,7 +66,10 @@
     <string name="content_backup_restored">Данные развёрнуты из резервной копии</string>
     <string name="content_backup_broken">Резервная копия повреждена или пуста</string>
     <string name="hero_win_rate">побед</string>
-    <string name="hero_difficulty">Сложность %1$d/10</string>
+    <string name="hero_tier">Тир %1$s</string>
+    <string name="hero_pick_ban">Выбор %1$.2f%% · Бан %2$.2f%%</string>
+    <string name="hero_trend_up">▲ +%1$.2f п.п. за неделю</string>
+    <string name="hero_trend_down">▼ %1$.2f п.п. за неделю</string>
 
     <!-- Экран настроек -->
     <string name="settings_title">Настройки</string>

@@ -1,88 +1,149 @@
 package com.example.androidlab.data;
 
 import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.Network;
+import android.net.NetworkCapabilities;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.example.androidlab.model.Hero;
-import com.example.androidlab.model.Hero.Lane;
-import com.example.androidlab.model.Hero.Role;
+import com.example.androidlab.network.ApiClient;
+import com.example.androidlab.network.HeroStatsDto;
+import com.example.androidlab.network.HeroStatsResponse;
+import com.example.androidlab.network.MlbbHubApi;
 
+import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 /**
- * Источник данных о героях. Отдаёт данные порционно (offset + limit), как REST API.
- * В лабораторной работе 3 заглушка заменяется на сетевой запрос.
+ * Источник данных о героях: статистика рейтинговых матчей с MLBBHub API.
+ * Данные запрашиваются порциями по {@link #PAGE_SIZE} героев.
  */
 public class HeroRepository {
 
     public static final int PAGE_SIZE = 15;
 
-    private static final List<Hero> ALL_HEROES = Arrays.asList(
-            new Hero(1, "Miya", Role.MARKSMAN, Lane.GOLD, 2, 51.3),
-            new Hero(2, "Balmond", Role.FIGHTER, Lane.JUNGLE, 2, 52.1),
-            new Hero(3, "Saber", Role.ASSASSIN, Lane.JUNGLE, 3, 50.4),
-            new Hero(4, "Alice", Role.MAGE, Lane.EXP, 5, 49.8),
-            new Hero(5, "Nana", Role.MAGE, Lane.MID, 2, 52.6),
-            new Hero(6, "Tigreal", Role.TANK, Lane.ROAM, 3, 51.9),
-            new Hero(7, "Alucard", Role.FIGHTER, Lane.EXP, 3, 49.2),
-            new Hero(8, "Karina", Role.ASSASSIN, Lane.JUNGLE, 4, 50.7),
-            new Hero(9, "Akai", Role.TANK, Lane.ROAM, 4, 50.1),
-            new Hero(10, "Franco", Role.TANK, Lane.ROAM, 6, 48.9),
-            new Hero(11, "Bane", Role.FIGHTER, Lane.EXP, 3, 50.5),
-            new Hero(12, "Bruno", Role.MARKSMAN, Lane.GOLD, 4, 49.6),
-            new Hero(13, "Clint", Role.MARKSMAN, Lane.GOLD, 5, 50.0),
-            new Hero(14, "Rafaela", Role.SUPPORT, Lane.ROAM, 2, 53.2),
-            new Hero(15, "Eudora", Role.MAGE, Lane.MID, 2, 51.4),
-            new Hero(16, "Zilong", Role.FIGHTER, Lane.EXP, 3, 50.9),
-            new Hero(17, "Fanny", Role.ASSASSIN, Lane.JUNGLE, 10, 47.5),
-            new Hero(18, "Layla", Role.MARKSMAN, Lane.GOLD, 1, 51.8),
-            new Hero(19, "Estes", Role.SUPPORT, Lane.ROAM, 2, 53.0),
-            new Hero(20, "Gord", Role.MAGE, Lane.MID, 3, 50.2),
-            new Hero(21, "Hayabusa", Role.ASSASSIN, Lane.JUNGLE, 8, 49.0),
-            new Hero(22, "Lolita", Role.TANK, Lane.ROAM, 4, 50.6),
-            new Hero(23, "Natalia", Role.ASSASSIN, Lane.ROAM, 5, 49.7),
-            new Hero(24, "Kagura", Role.MAGE, Lane.MID, 9, 48.1),
-            new Hero(25, "Chou", Role.FIGHTER, Lane.EXP, 8, 49.4),
-            new Hero(26, "Angela", Role.SUPPORT, Lane.ROAM, 3, 52.3),
-            new Hero(27, "Johnson", Role.TANK, Lane.ROAM, 6, 50.8),
-            new Hero(28, "Lesley", Role.MARKSMAN, Lane.GOLD, 5, 49.3),
-            new Hero(29, "Gusion", Role.ASSASSIN, Lane.JUNGLE, 9, 48.6),
-            new Hero(30, "Diggie", Role.SUPPORT, Lane.ROAM, 4, 51.1),
-            new Hero(31, "Granger", Role.MARKSMAN, Lane.GOLD, 6, 49.9),
-            new Hero(32, "Khufra", Role.TANK, Lane.ROAM, 5, 50.3),
-            new Hero(33, "Lunox", Role.MAGE, Lane.MID, 7, 48.8),
-            new Hero(34, "Ling", Role.ASSASSIN, Lane.JUNGLE, 10, 47.9),
-            new Hero(35, "Floryn", Role.SUPPORT, Lane.ROAM, 2, 52.8),
-            new Hero(36, "Fredrinn", Role.TANK, Lane.EXP, 6, 51.0)
-    );
+    /** Сортировка списка: сильнейшие по проценту побед герои первыми. */
+    private static final String SORT = "winRate";
+
+    public enum ErrorType {
+        /** Нет подключения к интернету (или включён офлайн-режим). */
+        NO_CONNECTION,
+        /** Подключение есть, но сервер не ответил (таймаут, DNS и т.п.). */
+        NETWORK,
+        /** Сервер ответил кодом ошибки HTTP. */
+        HTTP,
+        /** Ответ не удалось разобрать или сервер сообщил, что статистика недоступна. */
+        BAD_RESPONSE,
+        /** Сервер вернул пустой список. */
+        EMPTY
+    }
+
+    public interface PageCallback {
+        /**
+         * @param page  очередная порция героев (пустая, если загружено всё)
+         * @param total общее количество героев на сервере
+         */
+        void onPage(@NonNull List<Hero> page, int total);
+
+        /** @param httpCode код ответа для {@link ErrorType#HTTP}, иначе 0 */
+        void onError(@NonNull ErrorType type, int httpCode);
+    }
 
     private final AppPrefs prefs;
+    private final ConnectivityManager connectivityManager;
+    private final MlbbHubApi api;
 
     public HeroRepository(Context context) {
         prefs = new AppPrefs(context);
+        connectivityManager = context.getSystemService(ConnectivityManager.class);
+        api = ApiClient.getApi();
+    }
+
+    /** Есть ли сейчас подключение к интернету (с учётом имитации офлайн-режима из настроек). */
+    public boolean isOnline() {
+        if (prefs.isOfflineMode() || connectivityManager == null) {
+            return false;
+        }
+        Network network = connectivityManager.getActiveNetwork();
+        NetworkCapabilities capabilities = connectivityManager.getNetworkCapabilities(network);
+        return capabilities != null
+                && capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET);
     }
 
     /**
-     * Загружает порцию героев.
+     * Асинхронно загружает героев с offset по offset + limit. Результат приходит в главном потоке.
      *
-     * @return список (пустой, если данные закончились) или null, если нет соединения
+     * @return запрос, который можно отменить, или null, если запрос не отправлялся
      */
     @Nullable
-    public List<Hero> loadPage(int offset, int limit) {
-        if (prefs.isOfflineMode()) {
+    public Call<HeroStatsResponse> loadPage(int offset, int limit, @NonNull PageCallback callback) {
+        if (!isOnline()) {
+            callback.onError(ErrorType.NO_CONNECTION, 0);
             return null;
         }
-        if (offset >= ALL_HEROES.size()) {
-            return new ArrayList<>();
-        }
-        int end = Math.min(offset + limit, ALL_HEROES.size());
-        return new ArrayList<>(ALL_HEROES.subList(offset, end));
+
+        // API умеет только ограничивать количество записей (limit), поэтому следующая
+        // порция - это первые offset + limit героев, из которых берутся последние limit
+        Call<HeroStatsResponse> call = api.getHeroStats(offset + limit, SORT);
+        call.enqueue(new Callback<HeroStatsResponse>() {
+            @Override
+            public void onResponse(@NonNull Call<HeroStatsResponse> call,
+                                   @NonNull Response<HeroStatsResponse> response) {
+                if (!response.isSuccessful()) {
+                    callback.onError(ErrorType.HTTP, response.code());
+                    return;
+                }
+                HeroStatsResponse body = response.body();
+                if (body == null || !body.available || body.heroes == null) {
+                    callback.onError(ErrorType.BAD_RESPONSE, 0);
+                    return;
+                }
+
+                List<Hero> page = new ArrayList<>();
+                for (int i = offset; i < body.heroes.size(); i++) {
+                    Hero hero = toHero(body.heroes.get(i));
+                    if (hero != null) {
+                        page.add(hero);
+                    }
+                }
+                if (offset == 0 && page.isEmpty()) {
+                    callback.onError(ErrorType.EMPTY, 0);
+                    return;
+                }
+                callback.onPage(page, Math.max(body.total, offset + page.size()));
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<HeroStatsResponse> call, @NonNull Throwable t) {
+                if (call.isCanceled()) {
+                    // Экран закрыт - результат никому не нужен
+                    return;
+                }
+                if (t instanceof IOException) {
+                    callback.onError(isOnline() ? ErrorType.NETWORK : ErrorType.NO_CONNECTION, 0);
+                } else {
+                    // Например, JsonSyntaxException: сервер прислал не то, что ожидалось
+                    callback.onError(ErrorType.BAD_RESPONSE, 0);
+                }
+            }
+        });
+        return call;
     }
 
-    public boolean hasMore(int loadedCount) {
-        return loadedCount < ALL_HEROES.size();
+    @Nullable
+    private static Hero toHero(HeroStatsDto dto) {
+        if (dto == null || dto.slug == null || dto.slug.trim().isEmpty()) {
+            return null;
+        }
+        return new Hero(dto.slug.trim(), Hero.Tier.parse(dto.tier),
+                dto.winRate, dto.pickRate, dto.banRate, dto.winRateDelta);
     }
 }

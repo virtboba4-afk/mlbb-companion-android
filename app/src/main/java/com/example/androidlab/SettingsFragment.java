@@ -133,7 +133,7 @@ public class SettingsFragment extends BaseFragment {
             showMessage(R.string.content_backup_broken);
             return;
         }
-        HeroCache.replace(heroes, true);
+        HeroCache.replaceFromBackup(heroes);
         Snackbar.make(binding.getRoot(), R.string.settings_backup_restored, Snackbar.LENGTH_LONG)
                 .setAction(R.string.settings_back, v -> host().navigateBack())
                 .show();

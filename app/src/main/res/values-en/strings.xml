@@ -47,29 +47,20 @@
     <string name="registration_replace_message">Account “%1$s” already exists on this device. It will be replaced with the new one.</string>
     <string name="registration_replace_confirm">Replace</string>
 
-    <!-- Hero roles -->
-    <string name="role_tank">Tank</string>
-    <string name="role_fighter">Fighter</string>
-    <string name="role_assassin">Assassin</string>
-    <string name="role_mage">Mage</string>
-    <string name="role_marksman">Marksman</string>
-    <string name="role_support">Support</string>
-
-    <!-- Lanes -->
-    <string name="lane_gold">Gold Lane</string>
-    <string name="lane_exp">EXP Lane</string>
-    <string name="lane_mid">Mid Lane</string>
-    <string name="lane_jungle">Jungle</string>
-    <string name="lane_roam">Roam</string>
 
     <!-- Content screen -->
     <string name="content_greeting">Hi, %1$s! Good luck in your games</string>
     <string name="content_title">Heroes</string>
-    <string name="content_subtitle_count">Heroes loaded: %1$d</string>
+    <string name="content_subtitle_count">Heroes loaded: %1$d of %2$d</string>
     <string name="content_subtitle_backup">From backup: %1$d</string>
     <string name="content_empty_title">No data</string>
-    <string name="content_empty_with_backup">Could not load heroes: no internet connection.\nA backup from %1$s is available on this device.</string>
-    <string name="content_empty_no_backup">Could not load heroes: no internet connection and no backup.\nCheck your connection (or turn off offline mode in settings) and try again.</string>
+    <string name="content_loading">Loading hero statistics…</string>
+    <string name="content_empty_with_backup">%1$s.\nA backup from %2$s is available on this device.</string>
+    <string name="content_empty_no_backup">%1$s.\nThere is no backup. Check your connection (or turn off offline mode in settings) and try again.</string>
+    <string name="content_error_network">The server is not responding. Try again later</string>
+    <string name="content_error_http">The server returned error %1$d</string>
+    <string name="content_error_bad_response">The server sent invalid data</string>
+    <string name="content_error_empty">The server returned an empty hero list</string>
     <string name="content_use_backup">Use backup</string>
     <string name="content_retry">Try again</string>
     <string name="content_load_more">Load more heroes</string>
@@ -78,7 +69,10 @@
     <string name="content_backup_restored">Data restored from backup</string>
     <string name="content_backup_broken">Backup is corrupted or empty</string>
     <string name="hero_win_rate">win rate</string>
-    <string name="hero_difficulty">Difficulty %1$d/10</string>
+    <string name="hero_tier">Tier %1$s</string>
+    <string name="hero_pick_ban">Pick %1$.2f%% · Ban %2$.2f%%</string>
+    <string name="hero_trend_up">▲ +%1$.2f pp this week</string>
+    <string name="hero_trend_down">▼ %1$.2f pp this week</string>
 
     <!-- Settings screen -->
     <string name="settings_title">Settings</string>
