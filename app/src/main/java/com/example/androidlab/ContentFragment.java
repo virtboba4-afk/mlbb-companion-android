@@ -15,11 +15,14 @@ import com.example.androidlab.data.HeroCache;
 import com.example.androidlab.data.HeroRepository;
 import com.example.androidlab.databinding.FragmentContentBinding;
 import com.example.androidlab.model.Hero;
+import com.example.androidlab.network.HeroStatsResponse;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.text.DateFormat;
 import java.util.Date;
 import java.util.List;
+
+import retrofit2.Call;
 
 public class ContentFragment extends BaseFragment {
 
@@ -33,6 +36,16 @@ public class ContentFragment extends BaseFragment {
 
     /** Приветствие показывается один раз после входа, а не при каждом возврате с настроек. */
     private boolean greeted;
+
+    /** Текущий сетевой запрос (отменяется, когда экран уничтожает разметку). */
+    @Nullable
+    private Call<HeroStatsResponse> currentCall;
+    private boolean loadingFirstPage;
+    private boolean loadingMore;
+
+    /** Текст последней ошибки загрузки первой порции - показывается в состоянии "нет данных". */
+    @Nullable
+    private String lastError;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -73,6 +86,7 @@ public class ContentFragment extends BaseFragment {
         binding.btnRetry.setOnClickListener(v -> loadFirstPage());
         binding.btnUseBackup.setOnClickListener(v -> restoreFromBackup());
 
+        // Запрос на сервер при открытии экрана, если данных ещё нет
         if (HeroCache.isEmpty()) {
             loadFirstPage();
         }
@@ -102,28 +116,86 @@ public class ContentFragment extends BaseFragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        // Ответ на незавершённый запрос показывать уже негде
+        if (currentCall != null) {
+            currentCall.cancel();
+            currentCall = null;
+        }
+        loadingFirstPage = false;
+        loadingMore = false;
         binding = null;
     }
 
     private void loadFirstPage() {
-        List<Hero> page = repository.loadPage(0, HeroRepository.PAGE_SIZE);
-        if (page == null) {
-            render();
-            Snackbar.make(binding.getRoot(), R.string.content_no_connection, Snackbar.LENGTH_SHORT).show();
+        if (loadingFirstPage) {
             return;
         }
-        HeroCache.replace(page, false);
+        loadingFirstPage = true;
         render();
+
+        currentCall = repository.loadPage(0, HeroRepository.PAGE_SIZE, new HeroRepository.PageCallback() {
+            @Override
+            public void onPage(@NonNull List<Hero> page, int total) {
+                currentCall = null;
+                loadingFirstPage = false;
+                lastError = null;
+                HeroCache.replace(page, total);
+                render();
+            }
+
+            @Override
+            public void onError(@NonNull HeroRepository.ErrorType type, int httpCode) {
+                currentCall = null;
+                loadingFirstPage = false;
+                lastError = errorText(type, httpCode);
+                render();
+            }
+        });
     }
 
     private void loadMore() {
-        List<Hero> page = repository.loadPage(HeroCache.size(), HeroRepository.PAGE_SIZE);
-        if (page == null) {
-            Snackbar.make(binding.getRoot(), R.string.content_no_connection, Snackbar.LENGTH_SHORT).show();
+        if (loadingMore || loadingFirstPage) {
             return;
         }
-        HeroCache.add(page);
+        loadingMore = true;
         render();
+
+        currentCall = repository.loadPage(HeroCache.size(), HeroRepository.PAGE_SIZE,
+                new HeroRepository.PageCallback() {
+                    @Override
+                    public void onPage(@NonNull List<Hero> page, int total) {
+                        currentCall = null;
+                        loadingMore = false;
+                        HeroCache.add(page, total);
+                        render();
+                    }
+
+                    @Override
+                    public void onError(@NonNull HeroRepository.ErrorType type, int httpCode) {
+                        currentCall = null;
+                        loadingMore = false;
+                        render();
+                        Snackbar.make(binding.getRoot(), errorText(type, httpCode), Snackbar.LENGTH_LONG)
+                                .setAction(R.string.content_retry, v -> loadMore())
+                                .show();
+                    }
+                });
+    }
+
+    private String errorText(HeroRepository.ErrorType type, int httpCode) {
+        switch (type) {
+            case NO_CONNECTION:
+                return getString(R.string.content_no_connection);
+            case HTTP:
+                return getString(R.string.content_error_http, httpCode);
+            case BAD_RESPONSE:
+                return getString(R.string.content_error_bad_response);
+            case EMPTY:
+                return getString(R.string.content_error_empty);
+            case NETWORK:
+            default:
+                return getString(R.string.content_error_network);
+        }
     }
 
     private void restoreFromBackup() {
@@ -133,37 +205,42 @@ public class ContentFragment extends BaseFragment {
             render();
             return;
         }
-        HeroCache.replace(heroes, true);
+        HeroCache.replaceFromBackup(heroes);
         render();
         Snackbar.make(binding.getRoot(), R.string.content_backup_restored, Snackbar.LENGTH_SHORT).show();
     }
 
     private void render() {
+        if (binding == null) {
+            return;
+        }
         boolean empty = HeroCache.isEmpty();
+        boolean showLoading = empty && loadingFirstPage;
 
+        binding.loadingState.setVisibility(showLoading ? View.VISIBLE : View.GONE);
         binding.rvHeroes.setVisibility(empty ? View.GONE : View.VISIBLE);
-        binding.emptyState.setVisibility(empty ? View.VISIBLE : View.GONE);
+        binding.emptyState.setVisibility(empty && !showLoading ? View.VISIBLE : View.GONE);
 
         if (empty) {
             binding.toolbar.setSubtitle(null);
+            String error = lastError != null ? lastError : getString(R.string.content_no_connection);
             boolean hasBackup = backupManager.exists();
             binding.btnUseBackup.setVisibility(hasBackup ? View.VISIBLE : View.GONE);
             if (hasBackup) {
                 String date = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT)
                         .format(new Date(backupManager.getCreatedAt()));
-                binding.tvEmptyMessage.setText(getString(R.string.content_empty_with_backup, date));
+                binding.tvEmptyMessage.setText(getString(R.string.content_empty_with_backup, error, date));
             } else {
-                binding.tvEmptyMessage.setText(R.string.content_empty_no_backup);
+                binding.tvEmptyMessage.setText(getString(R.string.content_empty_no_backup, error));
             }
+        } else if (HeroCache.isFromBackup()) {
+            binding.toolbar.setSubtitle(getString(R.string.content_subtitle_backup, HeroCache.size()));
         } else {
-            binding.toolbar.setSubtitle(getString(
-                    HeroCache.isFromBackup()
-                            ? R.string.content_subtitle_backup
-                            : R.string.content_subtitle_count,
-                    HeroCache.size()));
+            binding.toolbar.setSubtitle(getString(R.string.content_subtitle_count,
+                    HeroCache.size(), HeroCache.getTotal()));
         }
 
-        adapter.submit(HeroCache.get(), repository.hasMore(HeroCache.size()));
+        adapter.submit(HeroCache.get(), HeroCache.hasMore(), loadingMore);
     }
 
     private void openSettings() {
