@@ -1,7 +1,6 @@
 <resources>
     <string name="app_name">ML Guide</string>
 
-    <!-- Common -->
     <string name="action_cancel">Cancel</string>
     <string name="action_ok">OK</string>
     <string name="field_login">Login</string>
@@ -9,7 +8,6 @@
     <string name="field_password_confirm">Repeat password</string>
     <string name="field_nickname">Nickname</string>
 
-    <!-- Validation -->
     <string name="error_login_empty">Enter your login</string>
     <string name="error_login_short">Login must be at least 3 characters</string>
     <string name="error_login_chars">Latin letters, digits and _ only</string>
@@ -23,7 +21,6 @@
     <string name="error_age">Age must be between 1 and 120</string>
     <string name="error_wrong_password">Wrong current password</string>
 
-    <!-- Start screen -->
     <string name="start_brand">ML GUIDE</string>
     <string name="start_description">Mobile Legends hero guide:\nroles, lanes, difficulty and win rates</string>
     <string name="start_welcome_new">Welcome!</string>
@@ -37,7 +34,6 @@
     <string name="start_registered">Account %1$s created. Enter your password to sign in</string>
     <string name="start_registration_cancelled">Registration cancelled</string>
 
-    <!-- Registration -->
     <string name="registration_title">Sign up</string>
     <string name="registration_description">Create your ML Guide account</string>
     <string name="registration_login_helper">Latin letters, digits and _, 3+ characters</string>
@@ -48,7 +44,6 @@
     <string name="registration_replace_confirm">Replace</string>
 
 
-    <!-- Content screen -->
     <string name="content_greeting">Hi, %1$s! Good luck in your games</string>
     <string name="content_title">Heroes</string>
     <string name="content_subtitle_count">Heroes loaded: %1$d of %2$d</string>
@@ -68,13 +63,14 @@
     <string name="content_no_connection">No internet connection</string>
     <string name="content_backup_restored">Data restored from backup</string>
     <string name="content_backup_broken">Backup is corrupted or empty</string>
+    <string name="content_file_error">Could not save the heroes file</string>
+    <string name="content_file_no_permission">No write permission: the heroes file was not saved</string>
     <string name="hero_win_rate">win rate</string>
     <string name="hero_tier">Tier %1$s</string>
     <string name="hero_pick_ban">Pick %1$.2f%% · Ban %2$.2f%%</string>
     <string name="hero_trend_up">▲ +%1$.2f pp this week</string>
     <string name="hero_trend_down">▼ %1$.2f pp this week</string>
 
-    <!-- Settings screen -->
     <string name="settings_title">Settings</string>
     <string name="settings_back">Back to heroes</string>
 
@@ -94,6 +90,26 @@
     <string name="settings_backup_delete_message">Without a backup, heroes won\'t be available offline.</string>
     <string name="settings_delete">Delete</string>
     <string name="settings_offline">Offline mode (simulate no internet)</string>
+
+    <string name="settings_file_section">Heroes file</string>
+    <string name="settings_file_info">Name: %1$s
+Location: %2$s
+Size: %3$s
+Created: %4$s</string>
+    <string name="settings_file_none">No file yet. It is created automatically after heroes are loaded.</string>
+    <string name="settings_file_backup_info">File backup: available (%1$s, from %2$s)</string>
+    <string name="settings_file_backup_none">No file backup. It appears when the file is deleted.</string>
+    <string name="settings_file_name">File name</string>
+    <string name="settings_file_name_helper">The .txt extension is added automatically</string>
+    <string name="settings_file_name_save">Save name</string>
+    <string name="settings_file_name_saved">File name saved</string>
+    <string name="settings_file_restore">Restore file</string>
+    <string name="settings_file_restored">File restored to Documents</string>
+    <string name="settings_file_delete">Delete file</string>
+    <string name="settings_file_deleted">File deleted</string>
+    <string name="settings_file_error">File operation failed</string>
+    <string name="settings_storage_error">Could not read saved settings</string>
+    <string name="error_file_name">Letters, digits, spaces, _ and - only</string>
 
     <string name="settings_profile_section">Profile</string>
     <string name="settings_login">Login: %1$s</string>

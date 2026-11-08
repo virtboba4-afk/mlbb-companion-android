@@ -1,7 +1,6 @@
 <resources>
     <string name="app_name">ML Guide</string>
 
-    <!-- Общие -->
     <string name="action_cancel">Отмена</string>
     <string name="action_ok">ОК</string>
     <string name="field_login">Логин</string>
@@ -9,7 +8,6 @@
     <string name="field_password_confirm">Повторите пароль</string>
     <string name="field_nickname">Никнейм</string>
 
-    <!-- Валидация -->
     <string name="error_login_empty">Введите логин</string>
     <string name="error_login_short">Логин должен содержать минимум 3 символа</string>
     <string name="error_login_chars">Только латинские буквы, цифры и _</string>
@@ -20,7 +18,6 @@
     <string name="error_nickname_length">Никнейм: от 2 до 20 символов</string>
     <string name="error_wrong_credentials">Неверный логин или пароль</string>
 
-    <!-- Стартовый экран -->
     <string name="start_brand">ML GUIDE</string>
     <string name="start_description">Справочник героев Mobile Legends:\nроли, линии, сложность и статистика побед</string>
     <string name="start_welcome_new">Добро пожаловать!</string>
@@ -34,7 +31,6 @@
     <string name="start_registered">Аккаунт %1$s создан. Введите пароль для входа</string>
     <string name="start_registration_cancelled">Регистрация отменена</string>
 
-    <!-- Регистрация -->
     <string name="registration_title">Регистрация</string>
     <string name="registration_description">Создайте аккаунт ML Guide</string>
     <string name="registration_login_helper">Латиница, цифры и _, от 3 символов</string>
@@ -45,7 +41,6 @@
     <string name="registration_replace_confirm">Заменить</string>
 
 
-    <!-- Экран данных -->
     <string name="content_greeting">Привет, %1$s! Удачной игры</string>
     <string name="content_title">Герои</string>
     <string name="content_subtitle_count">Загружено героев: %1$d из %2$d</string>
@@ -65,13 +60,14 @@
     <string name="content_no_connection">Нет подключения к интернету</string>
     <string name="content_backup_restored">Данные развёрнуты из резервной копии</string>
     <string name="content_backup_broken">Резервная копия повреждена или пуста</string>
+    <string name="content_file_error">Не удалось сохранить файл с героями</string>
+    <string name="content_file_no_permission">Нет разрешения на запись: файл с героями не сохранён</string>
     <string name="hero_win_rate">побед</string>
     <string name="hero_tier">Тир %1$s</string>
     <string name="hero_pick_ban">Выбор %1$.2f%% · Бан %2$.2f%%</string>
     <string name="hero_trend_up">▲ +%1$.2f п.п. за неделю</string>
     <string name="hero_trend_down">▼ %1$.2f п.п. за неделю</string>
 
-    <!-- Экран настроек -->
     <string name="settings_title">Настройки</string>
     <string name="settings_back">К списку героев</string>
 
@@ -91,6 +87,26 @@
     <string name="settings_backup_delete_message">Без копии герои будут недоступны без интернета.</string>
     <string name="settings_delete">Удалить</string>
     <string name="settings_offline">Офлайн-режим (имитация отсутствия интернета)</string>
+
+    <string name="settings_file_section">Файл с героями</string>
+    <string name="settings_file_info">Название: %1$s
+Расположение: %2$s
+Объём: %3$s
+Создан: %4$s</string>
+    <string name="settings_file_none">Файла нет. Он создаётся автоматически после загрузки героев.</string>
+    <string name="settings_file_backup_info">Резервная копия файла: есть (%1$s, от %2$s)</string>
+    <string name="settings_file_backup_none">Резервной копии файла нет. Она появится при удалении файла.</string>
+    <string name="settings_file_name">Название файла</string>
+    <string name="settings_file_name_helper">Расширение .txt добавится автоматически</string>
+    <string name="settings_file_name_save">Сохранить название</string>
+    <string name="settings_file_name_saved">Название файла сохранено</string>
+    <string name="settings_file_restore">Восстановить файл</string>
+    <string name="settings_file_restored">Файл восстановлен в папку Documents</string>
+    <string name="settings_file_delete">Удалить файл</string>
+    <string name="settings_file_deleted">Файл удалён</string>
+    <string name="settings_file_error">Не удалось выполнить операцию с файлом</string>
+    <string name="settings_storage_error">Не удалось прочитать сохранённые настройки</string>
+    <string name="error_file_name">Только буквы, цифры, пробелы, _ и -</string>
 
     <string name="settings_profile_section">Профиль</string>
     <string name="settings_login">Логин: %1$s</string>

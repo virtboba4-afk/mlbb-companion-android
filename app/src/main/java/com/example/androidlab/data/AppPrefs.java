@@ -8,19 +8,13 @@ import androidx.appcompat.app.AppCompatDelegate;
 
 import com.example.androidlab.R;
 
-/**
- * Хранилище данных пользователя и настроек приложения (SharedPreferences).
- */
 public class AppPrefs {
 
-    private static final String FILE = "ml_guide_prefs";
+    static final String FILE = "ml_guide_prefs";
 
     private static final String KEY_LOGIN = "login";
     private static final String KEY_PASSWORD = "password";
     private static final String KEY_NICKNAME = "nickname";
-    private static final String KEY_FULL_NAME = "full_name";
-    private static final String KEY_GENDER = "gender";
-    private static final String KEY_AGE = "age";
 
     private static final String KEY_OFFLINE = "offline_mode";
     private static final String KEY_THEME_MODE = "theme_mode";
@@ -32,20 +26,13 @@ public class AppPrefs {
     public static final String PALETTE_GOLD = "gold";
     public static final String PALETTE_GREEN = "green";
 
-    /** Доступные размеры шрифта (множитель к системному). */
     public static final float[] FONT_SCALES = {0.85f, 1.0f, 1.15f, 1.3f};
-
-    public static final String GENDER_NONE = "";
-    public static final String GENDER_MALE = "male";
-    public static final String GENDER_FEMALE = "female";
 
     private final SharedPreferences prefs;
 
     public AppPrefs(Context context) {
         prefs = context.getApplicationContext().getSharedPreferences(FILE, Context.MODE_PRIVATE);
     }
-
-    // --- Пользователь ---
 
     public boolean hasUser() {
         return !getLogin().isEmpty();
@@ -75,31 +62,10 @@ public class AppPrefs {
         return prefs.getString(KEY_NICKNAME, "");
     }
 
-    public String getFullName() {
-        return prefs.getString(KEY_FULL_NAME, "");
+    public void setNickname(String nickname) {
+        prefs.edit().putString(KEY_NICKNAME, nickname).apply();
     }
 
-    public String getGender() {
-        return prefs.getString(KEY_GENDER, GENDER_NONE);
-    }
-
-    /** Возраст пользователя или 0, если не задан. */
-    public int getAge() {
-        return prefs.getInt(KEY_AGE, 0);
-    }
-
-    public void saveProfile(String nickname, String fullName, String gender, int age) {
-        prefs.edit()
-                .putString(KEY_NICKNAME, nickname)
-                .putString(KEY_FULL_NAME, fullName)
-                .putString(KEY_GENDER, gender)
-                .putInt(KEY_AGE, age)
-                .apply();
-    }
-
-    // --- Настройки ---
-
-    /** Имитация отсутствия интернета, чтобы проверить работу с резервной копией. */
     public boolean isOfflineMode() {
         return prefs.getBoolean(KEY_OFFLINE, false);
     }
@@ -108,7 +74,6 @@ public class AppPrefs {
         prefs.edit().putBoolean(KEY_OFFLINE, offline).apply();
     }
 
-    /** Режим темы: AppCompatDelegate.MODE_NIGHT_NO / MODE_NIGHT_YES / MODE_NIGHT_FOLLOW_SYSTEM. */
     public int getThemeMode() {
         return prefs.getInt(KEY_THEME_MODE, AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
     }
@@ -139,7 +104,6 @@ public class AppPrefs {
         }
     }
 
-    /** Индекс размера шрифта в FONT_SCALES. */
     public int getFontScaleIndex() {
         int index = prefs.getInt(KEY_FONT_SCALE, 1);
         return Math.max(0, Math.min(index, FONT_SCALES.length - 1));

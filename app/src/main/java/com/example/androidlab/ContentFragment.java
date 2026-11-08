@@ -1,11 +1,15 @@
 package com.example.androidlab;
 
+import android.Manifest;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -13,6 +17,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import com.example.androidlab.data.BackupManager;
 import com.example.androidlab.data.HeroCache;
 import com.example.androidlab.data.HeroRepository;
+import com.example.androidlab.data.HeroesFileStorage;
 import com.example.androidlab.databinding.FragmentContentBinding;
 import com.example.androidlab.model.Hero;
 import com.example.androidlab.network.HeroStatsResponse;
@@ -30,20 +35,28 @@ public class ContentFragment extends BaseFragment {
 
     private HeroRepository repository;
     private BackupManager backupManager;
+    private HeroesFileStorage fileStorage;
     private HeroAdapter adapter;
 
     private FragmentContentBinding binding;
 
-    /** Приветствие показывается один раз после входа, а не при каждом возврате с настроек. */
+    private final ActivityResultLauncher<String> storagePermissionLauncher =
+            registerForActivityResult(new ActivityResultContracts.RequestPermission(), granted -> {
+                if (granted) {
+                    exportHeroesFile();
+                } else if (binding != null) {
+                    Snackbar.make(binding.getRoot(), R.string.content_file_no_permission,
+                            Snackbar.LENGTH_LONG).show();
+                }
+            });
+
     private boolean greeted;
 
-    /** Текущий сетевой запрос (отменяется, когда экран уничтожает разметку). */
     @Nullable
     private Call<HeroStatsResponse> currentCall;
     private boolean loadingFirstPage;
     private boolean loadingMore;
 
-    /** Текст последней ошибки загрузки первой порции - показывается в состоянии "нет данных". */
     @Nullable
     private String lastError;
 
@@ -53,6 +66,7 @@ public class ContentFragment extends BaseFragment {
 
         repository = new HeroRepository(requireContext());
         backupManager = new BackupManager(requireContext());
+        fileStorage = new HeroesFileStorage(requireContext());
         if (savedInstanceState != null) {
             greeted = savedInstanceState.getBoolean(STATE_GREETED);
         }
@@ -86,13 +100,11 @@ public class ContentFragment extends BaseFragment {
         binding.btnRetry.setOnClickListener(v -> loadFirstPage());
         binding.btnUseBackup.setOnClickListener(v -> restoreFromBackup());
 
-        // Запрос на сервер при открытии экрана, если данных ещё нет
         if (HeroCache.isEmpty()) {
             loadFirstPage();
         }
 
         if (!greeted) {
-            // Никнейм передан со стартового экрана через Safe Args
             String nickname = ContentFragmentArgs.fromBundle(requireArguments()).getNickname();
             Snackbar.make(binding.getRoot(), getString(R.string.content_greeting, nickname),
                     Snackbar.LENGTH_SHORT).show();
@@ -103,7 +115,6 @@ public class ContentFragment extends BaseFragment {
     @Override
     public void onResume() {
         super.onResume();
-        // Данные могли измениться на экране настроек (восстановление из копии)
         render();
     }
 
@@ -116,7 +127,6 @@ public class ContentFragment extends BaseFragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        // Ответ на незавершённый запрос показывать уже негде
         if (currentCall != null) {
             currentCall.cancel();
             currentCall = null;
@@ -141,6 +151,7 @@ public class ContentFragment extends BaseFragment {
                 lastError = null;
                 HeroCache.replace(page, total);
                 render();
+                exportHeroesFile();
             }
 
             @Override
@@ -168,6 +179,7 @@ public class ContentFragment extends BaseFragment {
                         loadingMore = false;
                         HeroCache.add(page, total);
                         render();
+                        exportHeroesFile();
                     }
 
                     @Override
@@ -180,6 +192,19 @@ public class ContentFragment extends BaseFragment {
                                 .show();
                     }
                 });
+    }
+
+    private void exportHeroesFile() {
+        if (fileStorage.needsPermission()) {
+            storagePermissionLauncher.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+            return;
+        }
+        fileStorage.export(HeroCache.get()).subscribe(() -> { }, error -> {
+            Log.w("HeroesFile", "Не удалось сохранить файл", error);
+            if (binding != null) {
+                Snackbar.make(binding.getRoot(), R.string.content_file_error, Snackbar.LENGTH_LONG).show();
+            }
+        });
     }
 
     private String errorText(HeroRepository.ErrorType type, int httpCode) {
@@ -244,7 +269,6 @@ public class ContentFragment extends BaseFragment {
     }
 
     private void openSettings() {
-        // Лаб. 1: startActivity(new Intent(this, SettingsActivity.class));
         host().navigateToSettings();
     }
 }

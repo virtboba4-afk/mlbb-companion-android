@@ -3,6 +3,7 @@ package com.example.androidlab;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.format.Formatter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +20,8 @@ import com.example.androidlab.data.AppPrefs;
 import com.example.androidlab.data.AvatarStorage;
 import com.example.androidlab.data.BackupManager;
 import com.example.androidlab.data.HeroCache;
+import com.example.androidlab.data.HeroesFileStorage;
+import com.example.androidlab.data.UserSettingsStore;
 import com.example.androidlab.databinding.DialogChangePasswordBinding;
 import com.example.androidlab.databinding.FragmentSettingsBinding;
 import com.example.androidlab.model.Hero;
@@ -32,15 +35,24 @@ import java.text.DateFormat;
 import java.util.Date;
 import java.util.List;
 
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.core.Completable;
+import io.reactivex.rxjava3.disposables.CompositeDisposable;
+
 public class SettingsFragment extends BaseFragment {
 
     private static final String NAME_PATTERN = "[\\p{L} \\-]+";
+    private static final String FILE_NAME_PATTERN = "[\\p{L}\\p{N} _\\-]+";
 
     private AppPrefs prefs;
+    private UserSettingsStore settingsStore;
+    private HeroesFileStorage fileStorage;
     private BackupManager backupManager;
     private AvatarStorage avatarStorage;
 
     private FragmentSettingsBinding binding;
+
+    private final CompositeDisposable disposables = new CompositeDisposable();
 
     private final ActivityResultLauncher<String> pickAvatarLauncher =
             registerForActivityResult(new ActivityResultContracts.GetContent(), this::onAvatarPicked);
@@ -50,6 +62,8 @@ public class SettingsFragment extends BaseFragment {
         super.onCreate(savedInstanceState);
 
         prefs = new AppPrefs(requireContext());
+        settingsStore = UserSettingsStore.get(requireContext());
+        fileStorage = new HeroesFileStorage(requireContext());
         backupManager = new BackupManager(requireContext());
         avatarStorage = new AvatarStorage(requireContext());
     }
@@ -67,25 +81,28 @@ public class SettingsFragment extends BaseFragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // Лаб. 1: возврат к экрану данных закрытием деятельности
-        // toolbar.setNavigationOnClickListener(v -> finish());
-        // findViewById(R.id.btnBackToContent).setOnClickListener(v -> finish());
         binding.toolbar.setNavigationOnClickListener(v -> host().navigateBack());
         binding.btnBackToContent.setOnClickListener(v -> host().navigateBack());
         binding.btnLogout.setOnClickListener(v -> logout());
 
         setupBackupSection();
+        setupFileSection(savedInstanceState == null);
         setupProfileSection(savedInstanceState == null);
         setupAppearanceSection();
     }
 
     @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        binding = null;
+    public void onResume() {
+        super.onResume();
+        renderFileState();
     }
 
-    // ===================== Резервная копия =====================
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        disposables.clear();
+        binding = null;
+    }
 
     private void setupBackupSection() {
         binding.btnBackupCreate.setOnClickListener(v -> createBackup());
@@ -98,16 +115,13 @@ public class SettingsFragment extends BaseFragment {
         renderBackupState();
     }
 
-    /** Оформление кнопок зависит от наличия копии и загруженных данных. */
     private void renderBackupState() {
         boolean exists = backupManager.exists();
         boolean hasData = !HeroCache.isEmpty();
 
         if (exists) {
-            String date = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT)
-                    .format(new Date(backupManager.getCreatedAt()));
             binding.tvBackupStatus.setText(getString(R.string.settings_backup_exists,
-                    backupManager.getCount(), date));
+                    backupManager.getCount(), formatDate(backupManager.getCreatedAt())));
         } else {
             binding.tvBackupStatus.setText(R.string.settings_backup_none);
         }
@@ -153,7 +167,75 @@ public class SettingsFragment extends BaseFragment {
                 .show();
     }
 
-    // ===================== Профиль =====================
+    private void setupFileSection(boolean fillFields) {
+        binding.btnFileNameSave.setOnClickListener(v -> saveFileName());
+        binding.btnFileDelete.setOnClickListener(v -> runFileOperation(
+                fileStorage.delete(), R.string.settings_file_deleted));
+        binding.btnFileRestore.setOnClickListener(v -> runFileOperation(
+                fileStorage.restore(), R.string.settings_file_restored));
+
+        if (fillFields) {
+            disposables.add(settingsStore.getFileName()
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(binding.etFileName::setText,
+                            error -> showMessage(R.string.settings_storage_error)));
+        }
+    }
+
+    private void renderFileState() {
+        disposables.add(fileStorage.getState().subscribe(this::showFileState,
+                error -> showMessage(R.string.settings_file_error)));
+    }
+
+    private void showFileState(HeroesFileStorage.State state) {
+        if (state.fileExists) {
+            binding.tvFileStatus.setText(getString(R.string.settings_file_info, state.fileName,
+                    state.filePath, formatSize(state.fileSize), formatDate(state.fileTime)));
+        } else {
+            binding.tvFileStatus.setText(R.string.settings_file_none);
+        }
+
+        if (state.backupExists) {
+            binding.tvFileBackupStatus.setText(getString(R.string.settings_file_backup_info,
+                    formatSize(state.backupSize), formatDate(state.backupTime)));
+        } else {
+            binding.tvFileBackupStatus.setText(R.string.settings_file_backup_none);
+        }
+
+        binding.btnFileDelete.setEnabled(state.fileExists);
+        binding.btnFileRestore.setEnabled(state.backupExists && !state.fileExists);
+    }
+
+    private void saveFileName() {
+        String name = binding.etFileName.getText().toString().trim().replaceFirst("(?i)\\.txt$", "");
+        binding.fileNameLayout.setError(null);
+
+        if (name.isEmpty()) {
+            name = UserSettingsStore.DEFAULT_FILE_NAME;
+        }
+        if (!name.matches(FILE_NAME_PATTERN)) {
+            binding.fileNameLayout.setError(getString(R.string.error_file_name));
+            return;
+        }
+
+        binding.etFileName.setText(name);
+        runFileOperation(fileStorage.rename(name), R.string.settings_file_name_saved);
+    }
+
+    private void runFileOperation(Completable operation, int successText) {
+        operation.subscribe(() -> {
+            showMessage(successText);
+            renderFileState();
+        }, error -> showMessage(R.string.settings_file_error));
+    }
+
+    private String formatSize(long bytes) {
+        return Formatter.formatShortFileSize(requireContext(), bytes);
+    }
+
+    private static String formatDate(long millis) {
+        return DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT).format(new Date(millis));
+    }
 
     private void setupProfileSection(boolean fillFields) {
         binding.tvProfileLogin.setText(getString(R.string.settings_login, prefs.getLogin()));
@@ -166,15 +248,22 @@ public class SettingsFragment extends BaseFragment {
 
         if (fillFields) {
             binding.etNickname.setText(prefs.getNickname());
-            binding.etFullName.setText(prefs.getFullName());
-            if (prefs.getAge() > 0) {
-                binding.etAge.setText(String.valueOf(prefs.getAge()));
-            }
-            if (AppPrefs.GENDER_MALE.equals(prefs.getGender())) {
-                binding.toggleGender.check(R.id.btnGenderMale);
-            } else if (AppPrefs.GENDER_FEMALE.equals(prefs.getGender())) {
-                binding.toggleGender.check(R.id.btnGenderFemale);
-            }
+            disposables.add(settingsStore.getProfile()
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(this::showProfile,
+                            error -> showMessage(R.string.settings_storage_error)));
+        }
+    }
+
+    private void showProfile(UserSettingsStore.Profile profile) {
+        binding.etFullName.setText(profile.fullName);
+        if (profile.age > 0) {
+            binding.etAge.setText(String.valueOf(profile.age));
+        }
+        if (UserSettingsStore.GENDER_MALE.equals(profile.gender)) {
+            binding.toggleGender.check(R.id.btnGenderMale);
+        } else if (UserSettingsStore.GENDER_FEMALE.equals(profile.gender)) {
+            binding.toggleGender.check(R.id.btnGenderFemale);
         }
     }
 
@@ -234,16 +323,19 @@ public class SettingsFragment extends BaseFragment {
             }
         }
 
-        String gender = AppPrefs.GENDER_NONE;
+        String gender = UserSettingsStore.GENDER_NONE;
         int checked = binding.toggleGender.getCheckedButtonId();
         if (checked == R.id.btnGenderMale) {
-            gender = AppPrefs.GENDER_MALE;
+            gender = UserSettingsStore.GENDER_MALE;
         } else if (checked == R.id.btnGenderFemale) {
-            gender = AppPrefs.GENDER_FEMALE;
+            gender = UserSettingsStore.GENDER_FEMALE;
         }
 
-        prefs.saveProfile(nickname, fullName, gender, age);
-        showMessage(R.string.settings_profile_saved);
+        prefs.setNickname(nickname);
+        settingsStore.saveProfile(fullName, gender, age)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(() -> showMessage(R.string.settings_profile_saved),
+                        error -> showMessage(R.string.settings_storage_error));
     }
 
     private void showChangePasswordDialog() {
@@ -261,7 +353,6 @@ public class SettingsFragment extends BaseFragment {
                 .create();
 
         dialog.setOnShowListener(d ->
-                // Своя обработка, чтобы диалог не закрывался при ошибке ввода
                 dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
                     String oldPassword = etOld.getText().toString().trim();
                     String newPassword = etNew.getText().toString().trim();
@@ -284,13 +375,7 @@ public class SettingsFragment extends BaseFragment {
         dialog.show();
     }
 
-    // ===================== Оформление =====================
-
     private void setupAppearanceSection() {
-        // Сначала выставляем текущие значения, потом вешаем слушатели,
-        // чтобы программная установка не считалась изменением
-
-        // Тема
         int mode = prefs.getThemeMode();
         binding.toggleTheme.check(mode == AppCompatDelegate.MODE_NIGHT_NO ? R.id.btnThemeLight
                 : mode == AppCompatDelegate.MODE_NIGHT_YES ? R.id.btnThemeDark
@@ -301,11 +386,9 @@ public class SettingsFragment extends BaseFragment {
                     : checkedId == R.id.btnThemeDark ? AppCompatDelegate.MODE_NIGHT_YES
                     : AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM;
             prefs.setThemeMode(newMode);
-            // AppCompat сам пересоздаст открытые экраны
             AppCompatDelegate.setDefaultNightMode(newMode);
         });
 
-        // Цветовая схема
         switch (prefs.getPalette()) {
             case AppPrefs.PALETTE_BLUE:
                 binding.chipGroupPalette.check(R.id.chipPaletteBlue);
@@ -327,11 +410,9 @@ public class SettingsFragment extends BaseFragment {
                     : id == R.id.chipPaletteGreen ? AppPrefs.PALETTE_GREEN
                     : AppPrefs.PALETTE_PURPLE;
             prefs.setPalette(palette);
-            // Тема применяется при создании деятельности - пересоздаём её, стек экранов сохранится
             ((BaseActivity) requireActivity()).recreateIfAppearanceChanged();
         });
 
-        // Размер шрифта
         binding.sliderFontSize.setValue(prefs.getFontScaleIndex());
         binding.sliderFontSize.setLabelFormatter(value -> fontPercent((int) value) + "%");
         binding.tvFontSize.setText(getString(R.string.settings_font_size, fontPercent(prefs.getFontScaleIndex())));
@@ -349,7 +430,6 @@ public class SettingsFragment extends BaseFragment {
             }
         });
 
-        // Язык
         String language = AppCompatDelegate.getApplicationLocales().toLanguageTags();
         binding.toggleLanguage.check(language.startsWith("ru") ? R.id.btnLangRu
                 : language.startsWith("en") ? R.id.btnLangEn
@@ -359,7 +439,6 @@ public class SettingsFragment extends BaseFragment {
             String tags = checkedId == R.id.btnLangRu ? "ru"
                     : checkedId == R.id.btnLangEn ? "en"
                     : "";
-            // AppCompat сохранит выбор и пересоздаст открытые экраны
             AppCompatDelegate.setApplicationLocales(LocaleListCompat.forLanguageTags(tags));
         });
     }
@@ -368,20 +447,15 @@ public class SettingsFragment extends BaseFragment {
         return Math.round(AppPrefs.FONT_SCALES[index] * 100);
     }
 
-    // ===================== Прочее =====================
-
     private void logout() {
         HeroCache.clear();
-        // Лаб. 1:
-        // Intent intent = new Intent(this, StartActivity.class);
-        // // Закрываем все открытые экраны и начинаем со стартового
-        // intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        // startActivity(intent);
-        // finish();
         host().navigateToStartAfterLogout();
     }
 
     private void showMessage(int textRes) {
+        if (binding == null) {
+            return;
+        }
         Snackbar.make(binding.getRoot(), textRes, Snackbar.LENGTH_SHORT).show();
     }
 }
