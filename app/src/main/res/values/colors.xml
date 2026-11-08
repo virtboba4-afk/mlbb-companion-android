@@ -3,18 +3,15 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
 
-    <!-- Цвета тиров героев (рамка карточки, аватар, метка тира) -->
     <color name="tier_s">#FFD9962B</color>
     <color name="tier_a">#FF7A4FC4</color>
     <color name="tier_b">#FF3F7CC4</color>
     <color name="tier_c">#FF2FA37A</color>
     <color name="tier_d">#FF8A8F98</color>
 
-    <!-- Процент побед -->
     <color name="win_rate_high">#FF2E9D57</color>
     <color name="win_rate_low">#FFD0453B</color>
 
-    <!-- Цветовые схемы (светлая тема) -->
     <color name="palette_blue_primary">#FF1E5AA8</color>
     <color name="palette_blue_on_primary">#FFFFFFFF</color>
     <color name="palette_blue_primary_container">#FFD6E3FF</color>

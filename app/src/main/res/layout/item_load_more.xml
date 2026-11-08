@@ -21,7 +21,6 @@
         android:text="@string/content_all_loaded"
         android:textAppearance="?attr/textAppearanceBodySmall" />
 
-    <!-- Загрузка следующей порции -->
     <com.google.android.material.progressindicator.CircularProgressIndicator
         android:id="@+id/pbLoadMore"
         android:layout_width="wrap_content"

@@ -15,7 +15,6 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 public class RegistrationFragment extends BaseFragment {
 
-    /** Ключ результата регистрации для Fragment Result API. */
     public static final String REQUEST_KEY = "registration";
 
     public static final String RESULT_OK = "ok";
@@ -41,7 +40,6 @@ public class RegistrationFragment extends BaseFragment {
         super.onViewCreated(view, savedInstanceState);
 
         if (savedInstanceState == null) {
-            // Логин, введённый на стартовом экране (передан через Safe Args)
             String login = RegistrationFragmentArgs.fromBundle(requireArguments()).getLogin();
             binding.etRegistrationLogin.setText(login);
         }
@@ -50,7 +48,6 @@ public class RegistrationFragment extends BaseFragment {
 
         binding.btnCancelRegistration.setOnClickListener(v -> cancel());
 
-        // Системная кнопка "назад" тоже отменяет регистрацию (как RESULT_CANCELED у деятельности)
         requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(),
                 new OnBackPressedCallback(true) {
                     @Override
@@ -61,9 +58,6 @@ public class RegistrationFragment extends BaseFragment {
     }
 
     private void cancel() {
-        // Лаб. 1:
-        // setResult(RESULT_CANCELED);
-        // finish();
         getParentFragmentManager().setFragmentResult(REQUEST_KEY, new Bundle());
         host().navigateBack();
     }
@@ -128,7 +122,6 @@ public class RegistrationFragment extends BaseFragment {
 
         AppPrefs prefs = new AppPrefs(requireContext());
         if (prefs.hasUser() && !prefs.getLogin().equals(login)) {
-            // На устройстве хранится один аккаунт - предупреждаем о замене
             new MaterialAlertDialogBuilder(requireContext())
                     .setTitle(R.string.registration_replace_title)
                     .setMessage(getString(R.string.registration_replace_message, prefs.getLogin()))
@@ -143,14 +136,6 @@ public class RegistrationFragment extends BaseFragment {
     }
 
     private void finishWithResult(String login, String password, String nickname) {
-        // Лаб. 1:
-        // Intent resultIntent = new Intent();
-        // resultIntent.putExtra(EXTRA_LOGIN, login);
-        // resultIntent.putExtra(EXTRA_PASSWORD, password);
-        // resultIntent.putExtra(EXTRA_NICKNAME, nickname);
-        // setResult(RESULT_OK, resultIntent);
-        // finish();
-
         Bundle result = new Bundle();
         result.putBoolean(RESULT_OK, true);
         result.putString(RESULT_LOGIN, login);

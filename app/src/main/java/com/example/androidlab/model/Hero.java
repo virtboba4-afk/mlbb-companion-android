@@ -9,12 +9,8 @@ import org.json.JSONObject;
 
 import java.util.Locale;
 
-/**
- * Герой Mobile Legends: Bang Bang и его статистика в рейтинговых матчах - объект предметной области.
- */
 public class Hero {
 
-    /** Тир героя в текущей мете - категория, от которой зависит оформление карточки. */
     public enum Tier {
         S(R.color.tier_s),
         A(R.color.tier_a),
@@ -28,7 +24,6 @@ public class Hero {
             this.color = color;
         }
 
-        /** Тир из строки API; неизвестное значение считается самым низким тиром. */
         public static Tier parse(String value) {
             if (value != null) {
                 for (Tier tier : values()) {
@@ -60,7 +55,6 @@ public class Hero {
         this.winRateDelta = winRateDelta;
     }
 
-    /** "yi-sun-shin" -> "Yi Sun Shin". */
     private static String nameFromSlug(String slug) {
         StringBuilder name = new StringBuilder();
         for (String part : slug.split("-")) {
@@ -83,22 +77,18 @@ public class Hero {
         return tier;
     }
 
-    /** Процент побед, %. */
     public double getWinRate() {
         return winRate;
     }
 
-    /** Доля выборов героя, %. */
     public double getPickRate() {
         return pickRate;
     }
 
-    /** Процент матчей с запретом героя, %. */
     public double getBanRate() {
         return banRate;
     }
 
-    /** Изменение процента побед за неделю, п.п. */
     public double getWinRateDelta() {
         return winRateDelta;
     }

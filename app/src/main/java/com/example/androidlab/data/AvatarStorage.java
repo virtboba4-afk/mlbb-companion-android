@@ -13,9 +13,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-/**
- * Аватар пользователя: копия выбранного изображения во внутреннем хранилище.
- */
 public class AvatarStorage {
 
     private static final String FILE_NAME = "avatar.jpg";
@@ -45,7 +42,6 @@ public class AvatarStorage {
         }
     }
 
-    /** Загружает уменьшенную копию аватара (не больше maxSize по стороне) или null. */
     @Nullable
     public Bitmap load(int maxSize) {
         if (!file.exists()) {

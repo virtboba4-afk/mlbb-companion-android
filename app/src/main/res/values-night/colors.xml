@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Цветовые схемы (тёмная тема) -->
     <color name="palette_blue_primary">#FFA9C7FF</color>
     <color name="palette_blue_on_primary">#FF003063</color>
     <color name="palette_blue_primary_container">#FF00468C</color>

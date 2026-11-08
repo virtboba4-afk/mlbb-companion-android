@@ -22,38 +22,23 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-/**
- * Источник данных о героях: статистика рейтинговых матчей с MLBBHub API.
- * Данные запрашиваются порциями по {@link #PAGE_SIZE} героев.
- */
 public class HeroRepository {
 
     public static final int PAGE_SIZE = 15;
 
-    /** Сортировка списка: сильнейшие по проценту побед герои первыми. */
     private static final String SORT = "winRate";
 
     public enum ErrorType {
-        /** Нет подключения к интернету (или включён офлайн-режим). */
         NO_CONNECTION,
-        /** Подключение есть, но сервер не ответил (таймаут, DNS и т.п.). */
         NETWORK,
-        /** Сервер ответил кодом ошибки HTTP. */
         HTTP,
-        /** Ответ не удалось разобрать или сервер сообщил, что статистика недоступна. */
         BAD_RESPONSE,
-        /** Сервер вернул пустой список. */
         EMPTY
     }
 
     public interface PageCallback {
-        /**
-         * @param page  очередная порция героев (пустая, если загружено всё)
-         * @param total общее количество героев на сервере
-         */
         void onPage(@NonNull List<Hero> page, int total);
 
-        /** @param httpCode код ответа для {@link ErrorType#HTTP}, иначе 0 */
         void onError(@NonNull ErrorType type, int httpCode);
     }
 
@@ -67,7 +52,6 @@ public class HeroRepository {
         api = ApiClient.getApi();
     }
 
-    /** Есть ли сейчас подключение к интернету (с учётом имитации офлайн-режима из настроек). */
     public boolean isOnline() {
         if (prefs.isOfflineMode() || connectivityManager == null) {
             return false;
@@ -78,11 +62,6 @@ public class HeroRepository {
                 && capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET);
     }
 
-    /**
-     * Асинхронно загружает героев с offset по offset + limit. Результат приходит в главном потоке.
-     *
-     * @return запрос, который можно отменить, или null, если запрос не отправлялся
-     */
     @Nullable
     public Call<HeroStatsResponse> loadPage(int offset, int limit, @NonNull PageCallback callback) {
         if (!isOnline()) {
@@ -90,8 +69,6 @@ public class HeroRepository {
             return null;
         }
 
-        // API умеет только ограничивать количество записей (limit), поэтому следующая
-        // порция - это первые offset + limit героев, из которых берутся последние limit
         Call<HeroStatsResponse> call = api.getHeroStats(offset + limit, SORT);
         call.enqueue(new Callback<HeroStatsResponse>() {
             @Override
@@ -124,13 +101,11 @@ public class HeroRepository {
             @Override
             public void onFailure(@NonNull Call<HeroStatsResponse> call, @NonNull Throwable t) {
                 if (call.isCanceled()) {
-                    // Экран закрыт - результат никому не нужен
                     return;
                 }
                 if (t instanceof IOException) {
                     callback.onError(isOnline() ? ErrorType.NETWORK : ErrorType.NO_CONNECTION, 0);
                 } else {
-                    // Например, JsonSyntaxException: сервер прислал не то, что ожидалось
                     callback.onError(ErrorType.BAD_RESPONSE, 0);
                 }
             }

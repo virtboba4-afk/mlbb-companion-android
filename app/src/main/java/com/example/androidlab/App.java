@@ -11,7 +11,6 @@ public class App extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        // Светлая / тёмная тема, выбранная пользователем в настройках
         AppCompatDelegate.setDefaultNightMode(new AppPrefs(this).getThemeMode());
     }
 }

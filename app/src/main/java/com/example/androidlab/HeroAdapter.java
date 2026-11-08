@@ -18,9 +18,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-/**
- * Список карточек героев + последний элемент с кнопкой "Загрузить ещё".
- */
 public class HeroAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private static final int TYPE_HERO = 0;
@@ -35,10 +32,6 @@ public class HeroAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         this.onLoadMore = onLoadMore;
     }
 
-    /**
-     * @param hasMore     есть ли на сервере следующая порция
-     * @param loadingMore идёт ли сейчас её загрузка
-     */
     public void submit(List<Hero> heroes, boolean hasMore, boolean loadingMore) {
         this.heroes = new ArrayList<>(heroes);
         this.hasMore = hasMore;
@@ -89,7 +82,6 @@ public class HeroAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             int tierColor = ContextCompat.getColor(context, hero.getTier().color);
             ColorStateList tierTint = ColorStateList.valueOf(tierColor);
 
-            // Оформление карточки зависит от тира героя
             binding.cardHero.setStrokeColor(tierTint);
             binding.tvAvatar.setBackgroundTintList(tierTint);
             binding.tvTier.setBackgroundTintList(tierTint);

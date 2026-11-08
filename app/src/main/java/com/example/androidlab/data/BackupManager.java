@@ -17,9 +17,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Резервная копия списка героев во внутреннем хранилище приложения (JSON-файл).
- */
 public class BackupManager {
 
     private static final String FILE_NAME = "heroes_backup.json";
@@ -34,7 +31,6 @@ public class BackupManager {
         return file.exists();
     }
 
-    /** Время создания копии (мс) или 0, если копии нет. */
     public long getCreatedAt() {
         return file.exists() ? file.lastModified() : 0;
     }
@@ -59,7 +55,6 @@ public class BackupManager {
         }
     }
 
-    /** Загружает героев из копии или возвращает null, если копии нет или она повреждена. */
     @Nullable
     public List<Hero> load() {
         if (!file.exists()) {

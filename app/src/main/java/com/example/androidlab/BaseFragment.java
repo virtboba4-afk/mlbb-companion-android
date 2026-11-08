@@ -11,18 +11,12 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-/**
- * Базовый фрагмент: логирует каждый метод жизненного цикла
- * в формате "[название фрагмента]: [название метода]".
- * Фильтр в LogCat: tag:Lifecycle
- */
 public abstract class BaseFragment extends Fragment {
 
     protected void log(String method) {
         Log.d(BaseActivity.LOG_TAG, getClass().getSimpleName() + ": " + method);
     }
 
-    /** Деятельность-хост, через которую выполняются переходы между экранами. */
     protected MainActivity host() {
         return (MainActivity) requireActivity();
     }

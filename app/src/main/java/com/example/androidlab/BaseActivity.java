@@ -11,18 +11,10 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.androidlab.data.AppPrefs;
 
-/**
- * Базовая деятельность: логирует каждый метод жизненного цикла
- * в формате "[название класса]: [название метода]".
- * Фильтр в LogCat: tag:Lifecycle
- *
- * Также применяет пользовательские настройки оформления: цветовую схему и размер шрифта.
- */
 public abstract class BaseActivity extends AppCompatActivity {
 
     public static final String LOG_TAG = "Lifecycle";
 
-    /** Оформление, с которым создан экран (цветовая схема + размер шрифта). */
     private String appliedAppearance;
 
     protected void log(String method) {
@@ -31,7 +23,6 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     @Override
     protected void attachBaseContext(Context newBase) {
-        // Размер шрифта: множитель к системному
         Configuration config = new Configuration(newBase.getResources().getConfiguration());
         config.fontScale *= new AppPrefs(newBase).getFontScale();
         super.attachBaseContext(newBase.createConfigurationContext(config));
@@ -51,7 +42,6 @@ public abstract class BaseActivity extends AppCompatActivity {
         return prefs.getPalette() + "|" + prefs.getFontScaleIndex();
     }
 
-    /** Пересоздаёт экран, если оформление изменилось с момента его создания. */
     public void recreateIfAppearanceChanged() {
         if (!appearanceOf(new AppPrefs(this)).equals(appliedAppearance)) {
             recreate();
@@ -110,8 +100,6 @@ public abstract class BaseActivity extends AppCompatActivity {
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
         super.onWindowFocusChanged(hasFocus);
-        // Полезно для сценария с "шторкой": activity не уходит в onPause,
-        // но теряет фокус окна.
         log("onWindowFocusChanged(" + hasFocus + ")");
     }
 }

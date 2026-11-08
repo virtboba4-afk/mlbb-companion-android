@@ -7,9 +7,6 @@ import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-/**
- * Единственный на приложение экземпляр Retrofit с настроенным HTTP-клиентом.
- */
 public final class ApiClient {
 
     private static MlbbHubApi api;
@@ -19,7 +16,6 @@ public final class ApiClient {
 
     public static synchronized MlbbHubApi getApi() {
         if (api == null) {
-            // Запросы и коды ответов видны в LogCat с тегом okhttp.OkHttpClient
             HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
             logging.setLevel(HttpLoggingInterceptor.Level.BASIC);
 

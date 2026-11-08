@@ -27,7 +27,6 @@
             android:paddingTop="8dp"
             android:paddingBottom="16dp" />
 
-        <!-- Загрузка первой порции -->
         <LinearLayout
             android:id="@+id/loadingState"
             android:layout_width="match_parent"
@@ -50,7 +49,6 @@
 
         </LinearLayout>
 
-        <!-- Состояние "нет данных" -->
         <LinearLayout
             android:id="@+id/emptyState"
             android:layout_width="match_parent"
